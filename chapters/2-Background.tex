@@ -1,0 +1,61 @@
+\chapter{Background}
+
+Internet connected devices is affecting human everyday life and routine more and more. The development in technology enables higher Internet speed, faster computers and huge amount of digital storage increases the usage and price for helpful devices such as air quality monitors, robot vacuum cleaners and smart door locks. All together these connected devices form smart home environment where home equipment can notify and act according to sensors or events triggered by other interconnected devices \cite{atlam2020iot}. A robot vacuum cleaner could clean when the front door is locked and all the smart light bulbs are turned off. For this to be possible the devices will have to use standard protocols and architecture to communicate with each other. 
+
+This section will provide background information about key elements of Internet of Things (IoT), the use of these devices to enable a smart home environment. It will also introduce robot vacuum cleaners, common features, specifications and network and application architecture. At the end it will introduce techniques for capturing live traffic in wires and wireless communication. 
+
+\section{Internet of Things}
+Internet of things is a collection of interconnected physical and virtual devices communication and sharing information with each other using Internet or private networks. Autonomous devices connected to a network will be available for information sharing, event triggering and actions at any time and can act according to inputs, status or triggers from other inter connected devices \cite{atlam2020iot}. These systems takes advantage of the mass amount of devices to perform large scale information sharing, intelligence software enables the devices to become smarter and more advanced based on the information which is shared among them. The devices are heterogeneity and involved numerous different hardware components and software versions and languages \cite{atlam2020iot}.
+
+The nature of customization of IoT devices makes the computational power and storage different, small devices like video cameras, smart door lock ect. can have limited local processors and storage and more the complexity to more centralized computational power such as could services. Data sensed by the door lock will have to be transferred to the cloud server, processed and replied with the appropriate action. This type of centralized architecture is more salable because the complexity is centralized, the challenge is therefor is ensure secure communication of the information as well as only authorized access to trigger events \cite{pavelic2018internet}. Some IoT systems need low latency and high computational capacity, smart car sensors is an example of this, self break and steering assistant will not have time to establish a secure connection to a could server, transfer information and then receive a action response. This low latency and high capacity introduce the need of edge or fog computing, the computing is therefor added closer to the IoT device if not embedded in the device itself \cite{mocrii2018iot}.  
+
+
+\subsection{Smart Home}
+Smart home is a commonly used to address the use of smart IoT devices to ease everyday living in consumers home, smart home devices is always on devices which collect and share information to other devices. These devices are controlled by a centralized mobile or computer which can trigger events or define event trigger environment within the smart home environment \cite{darby2018smart}. Consumers are installing various Iot devices in there home such as sensors, cameras and healthcare devices without really look into the security aspects of this. The willingness to install IoT devices is the effect of easing everyday tasks. IoT devices are designed to be easy to use in a everyday home, the use of common communication infrastructure like Wi-Fi and Bluetooth is therefore commonly used. The shared communication method by several IoT devises exposes the devices to each other, smart home devices with poor security can therefore increase the risk of other smart home devices to be attacked.
+
+Smart home environment architecture is determined on how the smart home devices is connected and are communication with each other. The home first become smart when the different devices is communication with each other, data is analysed and actions are taken across the environment based on this data, without user interaction. Consumers role is to define the baseline of functionality which they want to use in their smart home environment \cite{mocrii2018iot}.
+
+\subsection{Robot vacuum cleaner}
+
+\section{Communication Protocols used by Robot Vacuum Cleaners}
+
+All devices connected to a network need to follow standard communication protocols to be able to share information between each other. This work is the same way that humans use languages to communicate, we two persons talk different languages then they will need a converter to understand each other. In communication technology the different layers of the communication stack is divided into different communication layers. OSI reference model \cite{osimodel} is a commonly used model to describe the different layers of network communication. Each layer work separate from each other with some dependencies. The different layer is \cite{osimodel}: 
+\begin{itemize}
+    \item Physical layer, includes all the physical components such as, voltage, bit rate, connectors, signal transformation to the transmission medium. 
+    \item Data link layer, control traffic flow and access to transmission medium on a reliable manner, point-to-point communication. 
+    \item Network layer, enables traffic flow between two hosts by finding a way through the network. 
+    \item Transport layer 
+    \item Session layer 
+    \item Presentation layer 
+    \item Application layer
+    \ite
+\end{itemize}
+In the modern western society today it is common to have a mix of wires network cables delivered to you house by and ISP. This cable is often terminated in a customer edge router which delivers internet connectivity to the household. The customer edge router communicates with other devices with the use of wired communication Ethernet IEEE 802.1 or wireless by using IEEE 802.11. 
+
+\subsection{IEEE 802.3 Ethernet}
+Ethernet is a communication standard defined by the IEEE 802.3 standard \cite{802.3}. This is a mass standard in wired data link layer communication because of its adoption. The standard is also described as media access control due to the nature of ensuring link communication through wired media, this is done with standardised frames with serialized information which is captured and reads the bits according to the defined specification in \cite{802.3}. All data transmitted are collections of bytes, which includes 8 bits with the value 1 or 0. A byte can therefore hold all values between 0 to 255, this is also called a octet. A frame is divided into nine blocks: 
+\begin{itemize}
+    \item \textbf{Preamble field} is used to enable the receiving part of the communication to synchronise with the transmitted signal's timing.
+    \item \textbf{Start frame delimiter} is a eight bit long bit sequence 10101011, to specify to the receiving system to signalize when the destination address field starts. 
+    \item \textbf{Destination address} is a called a MAC address \cite{macaddress} and is described with six octets. A MAC address can be divided into two three octet parts, the first part is vendor specific and the last three octets is device specific. There is three types of destination MAC addresses defined: 
+    \begin{itemize}
+        \item Unicast, one source to one destination. 
+        \item Multicast, one source to several destinations. Usually clients subscribe to different multicast groups if they would like to receive the data shared within this group. 
+        \item Broadcast, one source to all devices on the connected data link layer network. This is used in cases where the destination address is unknown and the client flood the LAN to ensure that the frame reaches the intended destination. 
+    \end{itemize}
+    \item \textbf{Source address} is also a MAC address but is only used to state the initiator of traffic. 
+    \item \textbf{Length/Type} specifies either the length of the embedded client data section of the frame or the client data type protocol which is the underlying protocol. This helps the receiver to determine if it needs to add padding to ensure optimal frames. 
+    \item \textbf{MAC client data} includes data from the above layers in the OSI model, most commonly IP-packages. 
+    \item \textbf{Padding bits} is used to make the MAC client data 
+    \item \textbf{Frame check sequence}
+    \item \textbf{Extension field}
+\end{itemize}
+\subsection{IEEE 802.11 WI-FI}
+
+\subsection{Internet Protocol}
+
+\section{Network traffic sniffing}
+
+
+
+
