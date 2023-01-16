@@ -33,7 +33,29 @@ Other master students in my study group will focus on the information security a
 A robot vacuum cleaner will have to navigate around the smart home to be able to clean sufficiently. This navigation is handled differently, form the basic to more advanced navigation. Some of the more advances navigation systems uses laser or camera to navigate and map the environment. \cite{robotsel5} \cite{robotsel6} This type of mapping could generate some interesting information for the research. 
 
 \subsubsection{Network design}
-To represent the general smart home in common homes the research used the existing network infrastructure in the apartment and added some components to be able to better isolate the traffic from the robot vacuum cleaner. 
+To represent the general smart home in common homes the research used the existing network infrastructure in the apartment and added some components to be able to better isolate the traffic from the robot vacuum cleaner. The different elements are show in figre \ref{fig:HLD}, further each device will be described. 
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=10cm]{figures/HLD.png}
+    \caption{Network High Level Design}
+    \label{fig:HLD}
+\end{figure}
+
+\begin{itemize}
+    \item \textbf{Device:} Raspberry Pi 3b+
+    \item \textbf{Software:} Kali ARM \cite{kalidownload}, updated 27.09.2022
+    \item \textbf{Configuration:}
+    \begin{enumerate}
+        \item Image downloaded to an external computer and written to the micro SD-card with the application balenaEtcher \cite{balenaetcherdownload}.
+        \item Patching done 19.12.2022 with the command "sudo apt update \&\& sudo apt upgrade"
+    \end{enumerate}
+    \item \textbf{Connected items:}
+    \begin{enumerate}
+        \item Micro SD card \cite{microsdcard}
+        \item TL-WN722N USB WiFi Adapter \cite{tp-link}
+    \end{enumerate}
+\end{itemize}
 
 \section{Test cases}
 Each test Case consists of a detailed test description, which enables the tests and results to be reproduced as identical as possible. It will also state how many times the test was done during the research. The standby traffic test is performed over 14 consecutive days, and all other tests are done 20 times. The number of days and tests are decided based on the available time frame for this master thesis. Equipment selection process, design and configuration process and test phase is time consuming and 20 is therefore chosen as the overall test number. 
