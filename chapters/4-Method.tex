@@ -2,13 +2,65 @@
 
 This chapter will describe how the research is executed and which elements that is used. All Hardware, software and processes used will be described to increase the repeatability and validity of the research. The research can be divided into three, lab environment design and tests, traffic capturing and traffic analysis.
 
-\section{}{Tests}
-This section will describe the different tests and why they are relevant to the research. Attributes, settings and how the tests are performed will in detailed be described to ensure that all the tests and number of tests are performed the same way.
+\section{Testing}
+Testing is done in three different phases in this master thesis, this structure will allow the results from the previous testing to be used in the later phases and produce more accurate results.
 
-\section{}{Traffic capturing}
+    \paragraph{Phase 1: } In this phase the lab environment is setup and live for some time. When the setup is stable the stand by traffic test is executed. 
+
+    \paragraph{Phase 2: } At this point we define six different event tests to be executed by the robot vacuum cleaner and captured. All tests are done a defined number of times, in two different test environment. 
+
+    \paragraph{Phase 3: } The last phase is evaluation testing. The robot vacuum cleaner is deployed in three different environment, where other smart home devices are connected to the same local area network. 
+
+\subsection{Phase 1: Initial testing}
+Smart home environment is configured and verified in the created lab. The vacuum cleaner does home discovery, during this process the vacuum cleaner is moving around and mapping all available floors, with fruiterers.reference maybe. The lab environment is configured according to table x-x, and connected as figure x shows.
+
+\subsubsection{Capturing platform}
+A Raspberry PI 3b+ is used as the capturing platform during this mater thesis. The platform is small, autonomous and can be configured to do complex tasks in similar environments, \cite{Raspberrypi3_as_a_platform} and \cite{Raspberrypi3_as_a_platform_1} has implemented sensor and wireless sniffing on this device. It has one ethernet RJ-45 port and a wireless IEEE.802.11 NIC integrated, this enables both LAN and WLAN sniffing at the same time. 
+
+\begin{table}[!hbtp]
+\centering
+\caption{Capturing platform}
+    \begin{tabular}{|l|l|}
+    \hline
+    Device           & Raspberry Pi3 b+     \\ \hline
+    OS               & Kali Linux, Version? \\ \hline
+    Tshark           & Version?             \\ \hline
+    Wireshark        & Version?             \\ \hline
+    External device  & Wi-Fi adapter        \\ \hline
+    External storage & Micro SD-card 32Gb   \\ \hline
+    \end{tabular}
+\end{table}
+
+\subsubsection{Local area network switch}
+The local area network switch is used to duplicate the bidirectional network traffic from the access point, to the LAN NIC in the capturing platform.  This is done with the a SPAN port configuration, shown in figure XX \cite{Network_Span_port}.An Cisco Catalyst 2960 switch \cite{cisco_catalyst_8_port} is used based on its SPAN port support, and availability. 
+
+\begin{table}[!hbtp]
+\centering
+\caption{Local area network switch}
+    \begin{tabular}{|l|l|}
+    \hline
+        Device & Cisco Catalyst 2960 \\ \hline
+        OS     & IOS version?        \\ \hline
+    \end{tabular}
+\end{table}
+
+\subsubsection{Access point}
+
+\begin{table}[!hbtp]
+\centering
+\caption{Access point}
+    \begin{tabular}{|l|l|}
+    \hline
+        Device & TP-Link Access point \\ \hline
+        OS     & IOS version?         \\ \hline
+    \end{tabular}
+\end{table}
+
+
+\section{Traffic capturing}
 Smart home devices often generates network traffic continuous, as robot vacuum cleaners are cloud based they need to establish and keep alive a secure tunnel where commando and control can be executed. This section will describe how the captures are done and extracted to the location where the packet captures will be analysed. 
 
-\section{}{Traffic Analysis}
+\section{Traffic Analysis}
 To ensure that the research will produce the best contribution to the field of information security. Several different analysis tools will be used, but the main focus will be to use the best satiable machine learning algorithm for this purpose. The Traffic analysis section of this method will include the selection of there methods and, ect    
 
 \section{Smart Home Environment}
