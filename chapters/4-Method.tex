@@ -45,6 +45,7 @@ The local area network switch is used to duplicate the bidirectional network tra
 \end{table}
 
 \subsubsection{Access point}
+An Access point is added to the smart home lab environment, and broadcasts one SSID. To make the capturing attribution more accurate the SSID is only broadcaster on IEEE 802.11 channel 1. If not some packets can be missed due to channel hoping. Configuration overview is shown in figure XX. 
 
 \begin{table}[!hbtp]
 \centering
@@ -56,9 +57,19 @@ The local area network switch is used to duplicate the bidirectional network tra
     \end{tabular}
 \end{table}
 
+\subsubsection{Baseline network traffic capture}
+At the end of phase one, the standby network traffic capture is done. During the baseline network traffic capture, there is no events triggered on the robot vacuum cleaner. Baseline traffic will represent the traffic which is not generated due to events triggered and can be filtered away. 
 
 \section{Traffic capturing}
 Smart home devices often generates network traffic continuous, as robot vacuum cleaners are cloud based they need to establish and keep alive a secure tunnel where commando and control can be executed. This section will describe how the captures are done and extracted to the location where the packet captures will be analysed. 
+- Capturing in files
+
+- Tshark filter
+
+- Defining files
+
+
+
 
 \section{Traffic Analysis}
 To ensure that the research will produce the best contribution to the field of information security. Several different analysis tools will be used, but the main focus will be to use the best satiable machine learning algorithm for this purpose. The Traffic analysis section of this method will include the selection of there methods and, ect    
