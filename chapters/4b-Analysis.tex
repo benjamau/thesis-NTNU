@@ -1,0 +1,28 @@
+\chapter{Analysis}
+In this chapter the analysis method will be described according to the three phases in the methodology chapter. Observations during these phases is used in the analysis phase to more efficient. results in this chapter is only presented as arguments to limit the data needed to be processed and included in the human-learn:Rule-based process. This manual pre-filtering is done based on network knowledge or observations or each device in the smart home environment.
+
+\subsection{Phase 1 analysis}
+Pre-filtering in phase one uses the standby traffic captured. All traffic sent from or to the robot vacuum cleaner is the time period, 8 January 20:00 to 22 January 20:00, is included. As a live network has a lot of protocols running to keep the functionality such as, DHCP, ARP, NTP, DNS, SNMP, it is possible to filter out the kind of protocols which is not relevant. 
+
+\paragraph{Address resolution protocol, RFC826}
+ARP traffic is used to bind MAC-addresses to higher OSI layer addresses such as IP-addresses. This will only have an effect if there is corresponding devices on the WLAN or LAN as the robot vacuum cleaner. In this thesis there will not be any devices connected to the same network and the ARP requests between the WAN-address and the home router will be on a separate LAN and therefore not relevant.\cite{rfc826}
+
+On all analysis further the filter "not arp" will be applied. This filtered out 24.6 present of all packages in the capture.  
+
+Figure, no APR between BC domains.
+
+\paragraph{Network Time Protocol RFC 958,}
+If a network should work the best way as possible, the local time on the communication devices should be in synchronization. NTP is used for this purpose. This is a common protocol and public time servers are used for this purpose. NTP traffic will therefore also be excluded. In standby packet capture it is 0.4 percent NTP packages.\cite{rfc958_ntp}
+
+"not ntp" is applied. 
+
+\paragraph{Dynamic Host Configuration Protocol, RFC 2131}
+As for DHCP, both the access-point and the Robot vacuum cleaner as been assigned a reserved IP address in the local DHCP scope. DHCP-traffic will therefore not have any impact or effect on the events. It is therefore not included. "not dhcp" is applied. \cite{rfc2131_dhcp}
+
+Figure DHCP configuration, two gateways
+
+\paragraph{Domain Name System, RFC 1035}
+DNS system is a huge part of network communication. All traffic for an IP-address, not hardcoded will have to resolve FQDNs with DNS. This can be a good indication of which FQDNs devices inside the network is trying to communicate with. This will also apply for Irobot.public services. DNS will therefore be included in the analysis. 
+
+Figure Domain Name system
+

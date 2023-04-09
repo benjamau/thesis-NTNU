@@ -115,12 +115,42 @@ Mobile application will be able to access information about the robot vacuum cle
 
 
 \subsubsection{Human rule based learning}
-To determine if it is possible to identify the different events, we will apply human rule based learning \cite{Human-learn:Rule-based}. Such rule based learning will be easy to apply to captures without in depth knowledge to machine learning algorithms. The goal is to create hypothesis of event created traffic based on traffic captured in the different test cases, and the robot base line. 
-\newline
-To limit the amount of attributes to evaluate, the thesis will focus on the information represented in the header. 
-
+To determine if it is possible to identify the different events, we will apply human rule based learning \cite{Human-learn:Rule-based}. Such rule based learning will be easy to apply to captures without in depth knowledge to machine learning algorithms. The goal is to create hypothesis of event created traffic based on traffic captured in the different test cases, and the robot base line. For the manual analysis both Wireshark and Python with packet extensions will be used. The hypothesis will result in rules for events that is possible to identify.
+ 
 
 \subsection{Phase 3, Evaluation }
+When the Human-learn:Rule-based hypothesis is implemented in python and tested and verified on the training, it will be tested on traffic captured form more complex smart homes. The test lab will be setup in three new smart-home environment. For each evaluation environment a different smart home device will be connected to the same access point and SSID and the robot vacuum. This will generate traffic sourced from the same NAT'ed WAN address as the vacuum have, creating noise in the pcap.
+
+All three environment will be located in different geographical locations, \textit{Majorstuen Oslo, Skoyen Oslo and Drammen}. The physical space where the robot vacuum cleaner will operate will differ in size and furnishing, according to figure XX. 
+
+Oslo, maja 
+
+Oslo Skøyen 
+
+Drammen
+
+Evaluation testing all follow the same process flow in all locations. To ensure that all evaluation tests have the same base, the same pre capture process will be conducted before evaluation testing is started. 
+
+\begin{enumerate}
+\item From the application, restore the robot vacuum cleaner to factory default. 
+\item Deploy the environment, and configure the robot vacuum cleaner. 
+\item Run home discovery, and accept smart home map.
+\item Create both time and auto scheduled cleanings for the entire discovered floor.
+\end{enumerate}
+
+figure XX process pre capture
+
+Events for each evaluation test will be done with the same process figure XX. The order of the different events will be randomized with the use of python library random and function shuffle. From the tests starts one event will be triggered each 30 minutes. During the first 30 the robot vacuum cleaner will be restarted, this will make the identification of the correct IP-address easier. 
+
+\begin{enumerate}
+\item Start capturing, and restart the vacuum cleaner. 
+\item Trigger one event each 30 minutes. 
+\item Brows different websites during the test period
+\end{enumerate}
+
+Fugire xx, process of evaluation testing. 
+
+The capture file will then be divided into pcap files containing traffic for each 30 minutes, and only one event. The human-learn:rule-based result will then be applied and tested for each event. 
 
 \section{Traffic capturing}
 Traffic capturing is done on the Kali Linux capturing platform, the external wireless adapter is configured to run in monitoring mode according to \cite{wifi_adapter_monitor_mode}. IEEE 802.3 ethernet NIC will be able to capture traffic is its default state. Tshark is used as the capturing application, this is a sub-application of Wireshark \cite{wireshark}.
