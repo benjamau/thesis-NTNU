@@ -2,6 +2,22 @@
 \usepackage{graphicx}
 \usepackage{array}
 \usepackage{biblatex}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{longtable}
+\usepackage{listings}
+
+\lstset{language=Python,
+    basicstyle=\ttfamily,
+    keywordstyle=\color{blue}\ttfamily,
+    stringstyle=\color{red}\ttfamily,
+    commentstyle=\color{green}\ttfamily,
+    morecomment=[l][\color{magenta}]{\#},
+    showstringspaces=false,
+    breaklines=true,
+    frame=tb
+}
+
 
 \title{Sensitive Information Exposed By The Use Of Robot Vacuum Cleaners In Smart Homes }
 \shorttitle{Sensitive Information Exposed By The Use Of Robot Vacuum Cleaners In Smart Homes}
@@ -32,8 +48,10 @@
 \input{chapters/1-introduction.tex}
 \input{chapters/2-Background.tex}
 \input{chapters/3-Related_work}
-\input{chapters/4-Method.tex}
-\input{chapters/4b-Analysis.tex}
+%\input{chapters/4-Method.tex}
+\input{chapters/4a-Method-redo.tex}
+%\input{chapters/4b-Analysis.tex}
+\input{chapters/5b Analysis and Results.tex}
 \input{chapters/5-Results.tex}
 \input{chapters/6-discussion.tex}
 \input{chapters/7-conclution.tex}
