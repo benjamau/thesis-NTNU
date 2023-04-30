@@ -94,85 +94,393 @@ All these devices connected will create the WLAN/LAN which is used in all enviro
     \label{fig:SmartHomeSetup}
 \end{figure}
 
+
+\section{Event selection}
+In this section all the different event will be presented. These are based on different features for the Irobot Roomba i7 vacuum cleaner. The selected events are: 
+
+\begin{itemize}
+    \item \textbf{Standby event}, the vacuum cleaner is connected, but not interacted with. This will be used to identify standby traffic which can be filtered out for the events. 
+    \item \textbf{Scheduled cleaning}, users can configure scheduled cleaning jobs based on time and date. The vacuum cleaner will then start cleaning at the configured time. This could potentially expose some parts of the daily routine.
+    \item \textbf{Automated cleaning}, used integrated services such as location, smart lock and smart garage port to trigger events. For this research location integration with IFFF will be used to trigger the cleaning. If this could be identified, it could with high confidence say that the home owner left the resident.
+    \item \textbf{Application triggered cleaning}, user opens the Irobot application and manually triggers a cleaning job. Identification will show human interaction.
+    \item \textbf{Physical triggered cleaning}, user push a physical button on the vacuum cleaner to trigger cleaning. This would tell if the user is home. 
+    \item \textbf{Application start}, user starts the application on their phone. This will expose user interaction. 
+    \item \textbf{Bin remove}, user eject the bin and reenters it. this is the normal procedure when it is full. It can expose that user is home. 
+\end{itemize}
+
+\subsection{Event description}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/EventTriggeringProcess.png}
+    \caption{Capturing process}
+    \label{fig:EventTriggeringProcess}
+\end{figure}
+
+\subsection{Event tests}
+In this section all the different test flows will be described. This will make the tests and results more reproducible. 
+
+\subsubsection{Standby Traffic}
+This test is executed to identify network traffic generated to the robot vacuum cleaner in a standby mode. This means that there is no interaction done by human. 
+
+\begin{itemize}
+    \item \textbf{Event flow} \begin{enumerate}
+                                    \item Start captuing of LAN and WLAN traffic
+                                    \item Wait 14 days without any human interaction
+                                    \item Stop capturing
+                                \end{enumerate}
+    \item \textbf{Number of events:} 1
+\end{itemize}
+
+\subsubsection{Scheduled Cleaning}
+Scheduled cleaning can be configured through the application. Users can schedule a cleaning, specifying area in the smart home, time which the cleaning should start, as well as how often this should occur. 
+\begin{itemize}
+    \item \textbf{Event flow} \begin{enumerate}
+                                    \item Schedule cleaning outside of event capture
+                                    \item Note the time when cleaning started
+                                    \item Note when "finished cleaning" notification is received
+                                \end{enumerate}
+    \item \textbf{Number of events in each environment:} 10
+\end{itemize}
+
+\subsubsection{Automated cleaning}
+Irobot has features to integrate other services as triggers for events. This includes IFFF location tracker, Agust smart lock system, ecobee termotat system, My Leviton smart home integration and MyQ garage system. In this research the IFFF location system will be used. Cleaning is then triggered when the users phone is x meters away from home, where x is between 100m and 1 km. 
+
+\begin{itemize}
+    \item \textbf{Event flow} \begin{enumerate}
+                                    \item Configure automated cleaning outside of event capture
+                                    \item Leave the smart home environment
+                                    \item Note when cleaning notification is received
+                                    \item Note when "finished cleaning" notification is received
+                                \end{enumerate}
+    \item \textbf{Number of events in each environment:} 10
+\end{itemize}
+
+\subsubsection{Application triggered cleaning}
+In the application users can trigger cleaning. There is a predefined "clean all" option, if the user have not customized. Cleaning is triggered when the user is pressing a cleaning option in the application.
+
+\begin{itemize}
+    \item \textbf{Event flow} \begin{enumerate}
+                                    \item Note time
+                                    \item Open the application and trigger "clean all" event
+                                    \item Note when "finished cleaning" notification is received
+                                \end{enumerate}
+    \item \textbf{Number of events in each environment:} 10
+\end{itemize}
+
+\subsubsection{Physical triggered cleaning}
+The Irobot roomba i7 has a physical cleaning button on top of the vacuum cleaner. A "clean all" vent is triggered when this button is pressed.
+
+\begin{itemize}
+    \item \textbf{Event flow} \begin{enumerate}
+                                    \item Note time
+                                    \item Press the physical clean button on the vacuum cleaner
+                                    \item Note when "finished cleaning" notification is received
+                                \end{enumerate}
+    \item \textbf{Number of events in each environment:} 10
+\end{itemize}
+
+\subsubsection{Open application}
+When the application is opened information will be displayed, through the application the user can interact and change setting. 
+
+\begin{itemize}
+    \item \textbf{Event flow} \begin{enumerate}
+                                    \item Note time
+                                    \item Open the application on the smart phone
+                                    \item wait for some time
+                                    \item Close application
+                                    \item Note time
+                                \end{enumerate}
+    \item \textbf{Number of events in each environment:} 10
+\end{itemize}
+
+\subsubsection{Remove bin}
+The Irobot roomba i7 has it own bin where dust is collected during clean. This can be removed if it is to be empty. The user will then have to physically remove and insert again. 
+
+\begin{itemize}
+    \item \textbf{Event flow} \begin{enumerate}
+                                    \item Note time
+                                    \item Remove the bin
+                                    \item wait ta least 40 seconds
+                                    \item Insert the bin
+                                    \item Note time
+                                \end{enumerate}
+    \item \textbf{Number of events in each environment:} 10
+\end{itemize}
+
+
+
 \section{Traffic Capturing}
-
-\subsection{First test round i Environment 1}
-Test matrix for first round in \ref{tab:FirstRoundOfTests}
-
+Standby traffic was captured between 8 and 22  of January, during this time period, no interaction with the vacuum cleaner was done. It was also continuously connected to the smart home SSID, so that it could receive traffic from the could services. The event traffic capturing is done is the two different environments according to the test matrices \ref{tab:TestMatrixEnv1} \ref{tab:TestMatrixEnv2}. The testing is done in testing intervals. All events was observers finished, before a new event was triggered. Capturing in Drammen was done during four days, due to limited availability of the smart home.  
 \begin{table}[H]
 \centering
-\caption{Test matrix environment 1}
+\small
+\caption{Test matrix Oslo}
 \label{tab:TestMatrixEnv1}
 \begin{tabular}{|lllllllllll|}
 \hline
 \multicolumn{11}{|c|}{\textbf{Scheduled cleaning}}                                                                                                                                                                                                                                                        \\ \hline
-\multicolumn{1}{|l|}{Number} & \multicolumn{1}{l|}{1}     & \multicolumn{1}{l|}{2}     & \multicolumn{1}{l|}{3}     & \multicolumn{1}{l|}{4}     & \multicolumn{1}{l|}{5}     & \multicolumn{1}{l|}{6}     & \multicolumn{1}{l|}{7}     & \multicolumn{1}{l|}{8}     & \multicolumn{1}{l|}{9}     & 10    \\ \hline
+\multicolumn{1}{|l|}{Nr} & \multicolumn{1}{l|}{1}     & \multicolumn{1}{l|}{2}     & \multicolumn{1}{l|}{3}     & \multicolumn{1}{l|}{4}     & \multicolumn{1}{l|}{5}     & \multicolumn{1}{l|}{6}     & \multicolumn{1}{l|}{7}     & \multicolumn{1}{l|}{8}     & \multicolumn{1}{l|}{9}     & 10    \\ \hline
 \multicolumn{1}{|l|}{Date}   & \multicolumn{1}{l|}{10.03} & \multicolumn{1}{l|}{10.03} & \multicolumn{1}{l|}{10.03} & \multicolumn{1}{l|}{10.03} & \multicolumn{1}{l|}{10.03} & \multicolumn{1}{l|}{10.03} & \multicolumn{1}{l|}{10.03} & \multicolumn{1}{l|}{10.03} & \multicolumn{1}{l|}{11.03} & 11.03 \\ \hline
 \multicolumn{1}{|l|}{Start}  & \multicolumn{1}{l|}{10:44} & \multicolumn{1}{l|}{11:14} & \multicolumn{1}{l|}{12:14} & \multicolumn{1}{l|}{13:29} & \multicolumn{1}{l|}{14:59} & \multicolumn{1}{l|}{15:29} & \multicolumn{1}{l|}{15:54} & \multicolumn{1}{l|}{16:09} & \multicolumn{1}{l|}{10:09} & 10:29 \\ \hline
 \multicolumn{1}{|l|}{End}    & \multicolumn{1}{l|}{10:54} & \multicolumn{1}{l|}{11:24} & \multicolumn{1}{l|}{12:24} & \multicolumn{1}{l|}{13:39} & \multicolumn{1}{l|}{15:09} & \multicolumn{1}{l|}{15:39} & \multicolumn{1}{l|}{16:04} & \multicolumn{1}{l|}{16:19} & \multicolumn{1}{l|}{10:19} & 10:39 \\ \hline
 \multicolumn{11}{|c|}{\textbf{Application triggered cleaning}}                                                                                                                                                                                                                                            \\ \hline
-\multicolumn{1}{|l|}{Number} & \multicolumn{1}{l|}{1}     & \multicolumn{1}{l|}{2}     & \multicolumn{1}{l|}{3}     & \multicolumn{1}{l|}{4}     & \multicolumn{1}{l|}{5}     & \multicolumn{1}{l|}{6}     & \multicolumn{1}{l|}{7}     & \multicolumn{1}{l|}{8}     & \multicolumn{1}{l|}{9}     & 10    \\ \hline
+\multicolumn{1}{|l|}{Nr} & \multicolumn{1}{l|}{1}     & \multicolumn{1}{l|}{2}     & \multicolumn{1}{l|}{3}     & \multicolumn{1}{l|}{4}     & \multicolumn{1}{l|}{5}     & \multicolumn{1}{l|}{6}     & \multicolumn{1}{l|}{7}     & \multicolumn{1}{l|}{8}     & \multicolumn{1}{l|}{9}     & 10    \\ \hline
 \multicolumn{1}{|l|}{Date}   & \multicolumn{1}{l|}{28.02} & \multicolumn{1}{l|}{28.02} & \multicolumn{1}{l|}{01.03} & \multicolumn{1}{l|}{09.03} & \multicolumn{1}{l|}{09.03} & \multicolumn{1}{l|}{09.03} & \multicolumn{1}{l|}{09.03} & \multicolumn{1}{l|}{09.03} & \multicolumn{1}{l|}{12.03} & 12.03 \\ \hline
 \multicolumn{1}{|l|}{Start}  & \multicolumn{1}{l|}{18:20} & \multicolumn{1}{l|}{18:35} & \multicolumn{1}{l|}{18:53} & \multicolumn{1}{l|}{07:44} & \multicolumn{1}{l|}{08:03} & \multicolumn{1}{l|}{08:25} & \multicolumn{1}{l|}{08:57} & \multicolumn{1}{l|}{09:18} & \multicolumn{1}{l|}{12:20} & 12:54 \\ \hline
 \multicolumn{1}{|l|}{End}    & \multicolumn{1}{l|}{18:27} & \multicolumn{1}{l|}{18:42} & \multicolumn{1}{l|}{19:00} & \multicolumn{1}{l|}{07:49} & \multicolumn{1}{l|}{08:10} & \multicolumn{1}{l|}{08:31} & \multicolumn{1}{l|}{09:04} & \multicolumn{1}{l|}{09:26} & \multicolumn{1}{l|}{12:35} & 13:09 \\ \hline
 \multicolumn{11}{|c|}{\textbf{Open application}}                                                                                                                                                                                                                                                          \\ \hline
-\multicolumn{1}{|l|}{Number} & \multicolumn{1}{l|}{1}     & \multicolumn{1}{l|}{2}     & \multicolumn{1}{l|}{3}     & \multicolumn{1}{l|}{4}     & \multicolumn{1}{l|}{5}     & \multicolumn{1}{l|}{6}     & \multicolumn{1}{l|}{7}     & \multicolumn{1}{l|}{8}     & \multicolumn{1}{l|}{9}     & 10    \\ \hline
+\multicolumn{1}{|l|}{Nr} & \multicolumn{1}{l|}{1}     & \multicolumn{1}{l|}{2}     & \multicolumn{1}{l|}{3}     & \multicolumn{1}{l|}{4}     & \multicolumn{1}{l|}{5}     & \multicolumn{1}{l|}{6}     & \multicolumn{1}{l|}{7}     & \multicolumn{1}{l|}{8}     & \multicolumn{1}{l|}{9}     & 10    \\ \hline
 \multicolumn{1}{|l|}{Date}   & \multicolumn{1}{l|}{10.03} & \multicolumn{1}{l|}{10.03} & \multicolumn{1}{l|}{10.03} & \multicolumn{1}{l|}{10.03} & \multicolumn{1}{l|}{10.03} & \multicolumn{1}{l|}{10.03} & \multicolumn{1}{l|}{10.03} & \multicolumn{1}{l|}{10.03} & \multicolumn{1}{l|}{11.03} & 11.03 \\ \hline
 \multicolumn{1}{|l|}{Start}  & \multicolumn{1}{l|}{10:26} & \multicolumn{1}{l|}{11:06} & \multicolumn{1}{l|}{11:56} & \multicolumn{1}{l|}{13:22} & \multicolumn{1}{l|}{14:58} & \multicolumn{1}{l|}{15:27} & \multicolumn{1}{l|}{15:51} & \multicolumn{1}{l|}{16:07} & \multicolumn{1}{l|}{10:06} & 10:22 \\ \hline
 \multicolumn{1}{|l|}{End}    & \multicolumn{1}{l|}{10:36} & \multicolumn{1}{l|}{11:16} & \multicolumn{1}{l|}{12:06} & \multicolumn{1}{l|}{13:32} & \multicolumn{1}{l|}{15:08} & \multicolumn{1}{l|}{15:37} & \multicolumn{1}{l|}{16:01} & \multicolumn{1}{l|}{16:17} & \multicolumn{1}{l|}{10:16} & 10:32 \\ \hline
 \multicolumn{11}{|c|}{\textbf{Remove bin}}                                                                                                                                                                                                                                                                \\ \hline
-\multicolumn{1}{|l|}{Number} & \multicolumn{1}{l|}{1}     & \multicolumn{1}{l|}{2}     & \multicolumn{1}{l|}{3}     & \multicolumn{1}{l|}{4}     & \multicolumn{1}{l|}{5}     & \multicolumn{1}{l|}{6}     & \multicolumn{1}{l|}{7}     & \multicolumn{1}{l|}{8}     & \multicolumn{1}{l|}{9}     & 10    \\ \hline
+\multicolumn{1}{|l|}{Nr} & \multicolumn{1}{l|}{1}     & \multicolumn{1}{l|}{2}     & \multicolumn{1}{l|}{3}     & \multicolumn{1}{l|}{4}     & \multicolumn{1}{l|}{5}     & \multicolumn{1}{l|}{6}     & \multicolumn{1}{l|}{7}     & \multicolumn{1}{l|}{8}     & \multicolumn{1}{l|}{9}     & 10    \\ \hline
 \multicolumn{1}{|l|}{Date}   & \multicolumn{1}{l|}{11.03} & \multicolumn{1}{l|}{11.03} & \multicolumn{1}{l|}{11.03} & \multicolumn{1}{l|}{11.03} & \multicolumn{1}{l|}{11.03} & \multicolumn{1}{l|}{11.03} & \multicolumn{1}{l|}{11.03} & \multicolumn{1}{l|}{11.03} & \multicolumn{1}{l|}{11.03} & 11.03 \\ \hline
 \multicolumn{1}{|l|}{Start}  & \multicolumn{1}{l|}{17:30} & \multicolumn{1}{l|}{17:35} & \multicolumn{1}{l|}{17:40} & \multicolumn{1}{l|}{17:44} & \multicolumn{1}{l|}{17:47} & \multicolumn{1}{l|}{17:49} & \multicolumn{1}{l|}{17:51} & \multicolumn{1}{l|}{17:53} & \multicolumn{1}{l|}{17:55} & 18:01 \\ \hline
 \multicolumn{1}{|l|}{End}    & \multicolumn{1}{l|}{17:31} & \multicolumn{1}{l|}{17:36} & \multicolumn{1}{l|}{17:41} & \multicolumn{1}{l|}{17:45} & \multicolumn{1}{l|}{17:48} & \multicolumn{1}{l|}{17:50} & \multicolumn{1}{l|}{17:52} & \multicolumn{1}{l|}{17:54} & \multicolumn{1}{l|}{17:56} & 18:02 \\ \hline
 \multicolumn{11}{|c|}{\textbf{Physical triggered cleaning}}                                                                                                                                                                                                                                               \\ \hline
-\multicolumn{1}{|l|}{Number} & \multicolumn{1}{l|}{1}     & \multicolumn{1}{l|}{2}     & \multicolumn{1}{l|}{3}     & \multicolumn{1}{l|}{4}     & \multicolumn{1}{l|}{5}     & \multicolumn{1}{l|}{6}     & \multicolumn{1}{l|}{7}     & \multicolumn{1}{l|}{8}     & \multicolumn{1}{l|}{9}     & 10    \\ \hline
+\multicolumn{1}{|l|}{Nr} & \multicolumn{1}{l|}{1}     & \multicolumn{1}{l|}{2}     & \multicolumn{1}{l|}{3}     & \multicolumn{1}{l|}{4}     & \multicolumn{1}{l|}{5}     & \multicolumn{1}{l|}{6}     & \multicolumn{1}{l|}{7}     & \multicolumn{1}{l|}{8}     & \multicolumn{1}{l|}{9}     & 10    \\ \hline
 \multicolumn{1}{|l|}{Date}   & \multicolumn{1}{l|}{23.02} & \multicolumn{1}{l|}{23.02} & \multicolumn{1}{l|}{23.02} & \multicolumn{1}{l|}{23.02} & \multicolumn{1}{l|}{23.02} & \multicolumn{1}{l|}{09.03} & \multicolumn{1}{l|}{09.03} & \multicolumn{1}{l|}{09.03} & \multicolumn{1}{l|}{09.03} & 09.03 \\ \hline
 \multicolumn{1}{|l|}{Start}  & \multicolumn{1}{l|}{18:08} & \multicolumn{1}{l|}{18:36} & \multicolumn{1}{l|}{19:14} & \multicolumn{1}{l|}{20:13} & \multicolumn{1}{l|}{20:44} & \multicolumn{1}{l|}{09:43} & \multicolumn{1}{l|}{10:30} & \multicolumn{1}{l|}{12:32} & \multicolumn{1}{l|}{13:16} & 17:44 \\ \hline
 \multicolumn{1}{|l|}{End}    & \multicolumn{1}{l|}{18:24} & \multicolumn{1}{l|}{19:05} & \multicolumn{1}{l|}{19:34} & \multicolumn{1}{l|}{20:35} & \multicolumn{1}{l|}{21:06} & \multicolumn{1}{l|}{10:02} & \multicolumn{1}{l|}{10:50} & \multicolumn{1}{l|}{12:50} & \multicolumn{1}{l|}{14:05} & 18:05 \\ \hline
 \multicolumn{11}{|c|}{\textbf{Automated cleaning}}                                                                                                                                                                                                                                                        \\ \hline
-\multicolumn{1}{|l|}{Number} & \multicolumn{1}{l|}{1}     & \multicolumn{1}{l|}{2}     & \multicolumn{1}{l|}{3}     & \multicolumn{1}{l|}{4}     & \multicolumn{1}{l|}{5}     & \multicolumn{1}{l|}{6}     & \multicolumn{1}{l|}{7}     & \multicolumn{1}{l|}{8}     & \multicolumn{1}{l|}{9}     & 10    \\ \hline
+\multicolumn{1}{|l|}{Nr} & \multicolumn{1}{l|}{1}     & \multicolumn{1}{l|}{2}     & \multicolumn{1}{l|}{3}     & \multicolumn{1}{l|}{4}     & \multicolumn{1}{l|}{5}     & \multicolumn{1}{l|}{6}     & \multicolumn{1}{l|}{7}     & \multicolumn{1}{l|}{8}     & \multicolumn{1}{l|}{9}     & 10    \\ \hline
 \multicolumn{1}{|l|}{Date}   & \multicolumn{1}{l|}{21.02} & \multicolumn{1}{l|}{22.02} & \multicolumn{1}{l|}{23.02} & \multicolumn{1}{l|}{01.03} & \multicolumn{1}{l|}{02.03} & \multicolumn{1}{l|}{03.03} & \multicolumn{1}{l|}{06.03} & \multicolumn{1}{l|}{07.03} & \multicolumn{1}{l|}{08.03} & 09.03 \\ \hline
 \multicolumn{1}{|l|}{Start}  & \multicolumn{1}{l|}{21:06} & \multicolumn{1}{l|}{07:37} & \multicolumn{1}{l|}{10:10} & \multicolumn{1}{l|}{07:42} & \multicolumn{1}{l|}{11:05} & \multicolumn{1}{l|}{07:03} & \multicolumn{1}{l|}{07:04} & \multicolumn{1}{l|}{08:42} & \multicolumn{1}{l|}{07:49} & 07:22 \\ \hline
 \multicolumn{1}{|l|}{End}    & \multicolumn{1}{l|}{21:14} & \multicolumn{1}{l|}{07:45} & \multicolumn{1}{l|}{10:16} & \multicolumn{1}{l|}{07:47} & \multicolumn{1}{l|}{11:10} & \multicolumn{1}{l|}{07:08} & \multicolumn{1}{l|}{07:09} & \multicolumn{1}{l|}{08:47} & \multicolumn{1}{l|}{07:54} & 07:29 \\ \hline
 \end{tabular}
 \end{table}
 
+
 \begin{table}[H]
+\small
 \centering
-\caption{Test matrix environment 2}
+\caption{Test matrix Drammen}
 \label{tab:TestMatrixEnv2}
 \begin{tabular}{|lllllllllll|}
 \hline
 \multicolumn{11}{|c|}{\textbf{Scheduled cleaning}}                                                                                                                                                                                                                                                        \\ \hline
-\multicolumn{1}{|l|}{Number} & \multicolumn{1}{l|}{1}     & \multicolumn{1}{l|}{2}     & \multicolumn{1}{l|}{3}     & \multicolumn{1}{l|}{4}     & \multicolumn{1}{l|}{5}     & \multicolumn{1}{l|}{6}     & \multicolumn{1}{l|}{7}     & \multicolumn{1}{l|}{8}     & \multicolumn{1}{l|}{9}     & 10    \\ \hline
+\multicolumn{1}{|l|}{Nr} & \multicolumn{1}{l|}{1}     & \multicolumn{1}{l|}{2}     & \multicolumn{1}{l|}{3}     & \multicolumn{1}{l|}{4}     & \multicolumn{1}{l|}{5}     & \multicolumn{1}{l|}{6}     & \multicolumn{1}{l|}{7}     & \multicolumn{1}{l|}{8}     & \multicolumn{1}{l|}{9}     & 10    \\ \hline
 \multicolumn{1}{|l|}{Date}   & \multicolumn{1}{l|}{25.02} & \multicolumn{1}{l|}{25.02} & \multicolumn{1}{l|}{26.02} & \multicolumn{1}{l|}{26.02} & \multicolumn{1}{l|}{26.02} & \multicolumn{1}{l|}{26.02} & \multicolumn{1}{l|}{26.02} & \multicolumn{1}{l|}{26.02} & \multicolumn{1}{l|}{26.02} & 26.02 \\ \hline
 \multicolumn{1}{|l|}{Start}  & \multicolumn{1}{l|}{20:30} & \multicolumn{1}{l|}{21:00} & \multicolumn{1}{l|}{11:20} & \multicolumn{1}{l|}{11:50} & \multicolumn{1}{l|}{12:20} & \multicolumn{1}{l|}{12:50} & \multicolumn{1}{l|}{13:20} & \multicolumn{1}{l|}{13:50} & \multicolumn{1}{l|}{14:20} & 15:00 \\ \hline
 \multicolumn{1}{|l|}{End}    & \multicolumn{1}{l|}{20:45} & \multicolumn{1}{l|}{21:15} & \multicolumn{1}{l|}{11:35} & \multicolumn{1}{l|}{12:05} & \multicolumn{1}{l|}{12:35} & \multicolumn{1}{l|}{13:05} & \multicolumn{1}{l|}{13:35} & \multicolumn{1}{l|}{14:05} & \multicolumn{1}{l|}{14:35} & 15:15 \\ \hline
 \multicolumn{11}{|c|}{\textbf{Application triggered cleaning}}                                                                                                                                                                                                                                            \\ \hline
-\multicolumn{1}{|l|}{Number} & \multicolumn{1}{l|}{1}     & \multicolumn{1}{l|}{2}     & \multicolumn{1}{l|}{3}     & \multicolumn{1}{l|}{4}     & \multicolumn{1}{l|}{5}     & \multicolumn{1}{l|}{6}     & \multicolumn{1}{l|}{7}     & \multicolumn{1}{l|}{8}     & \multicolumn{1}{l|}{9}     & 10    \\ \hline
+\multicolumn{1}{|l|}{Nr} & \multicolumn{1}{l|}{1}     & \multicolumn{1}{l|}{2}     & \multicolumn{1}{l|}{3}     & \multicolumn{1}{l|}{4}     & \multicolumn{1}{l|}{5}     & \multicolumn{1}{l|}{6}     & \multicolumn{1}{l|}{7}     & \multicolumn{1}{l|}{8}     & \multicolumn{1}{l|}{9}     & 10    \\ \hline
 \multicolumn{1}{|l|}{Date}   & \multicolumn{1}{l|}{25.02} & \multicolumn{1}{l|}{25.02} & \multicolumn{1}{l|}{25.02} & \multicolumn{1}{l|}{25.02} & \multicolumn{1}{l|}{25.02} & \multicolumn{1}{l|}{25.02} & \multicolumn{1}{l|}{25.02} & \multicolumn{1}{l|}{25.02} & \multicolumn{1}{l|}{25.02} & 25.02 \\ \hline
 \multicolumn{1}{|l|}{Start}  & \multicolumn{1}{l|}{14:30} & \multicolumn{1}{l|}{15:00} & \multicolumn{1}{l|}{15:30} & \multicolumn{1}{l|}{16:00} & \multicolumn{1}{l|}{16:30} & \multicolumn{1}{l|}{17:00} & \multicolumn{1}{l|}{17:30} & \multicolumn{1}{l|}{19:00} & \multicolumn{1}{l|}{19:30} & 20:00 \\ \hline
 \multicolumn{1}{|l|}{End}    & \multicolumn{1}{l|}{14:45} & \multicolumn{1}{l|}{15:15} & \multicolumn{1}{l|}{15:45} & \multicolumn{1}{l|}{16:15} & \multicolumn{1}{l|}{16:45} & \multicolumn{1}{l|}{17:15} & \multicolumn{1}{l|}{17:45} & \multicolumn{1}{l|}{19:15} & \multicolumn{1}{l|}{19:45} & 20:15 \\ \hline
 \multicolumn{11}{|c|}{\textbf{Open application}}                                                                                                                                                                                                                                                          \\ \hline
-\multicolumn{1}{|l|}{Number} & \multicolumn{1}{l|}{1}     & \multicolumn{1}{l|}{2}     & \multicolumn{1}{l|}{3}     & \multicolumn{1}{l|}{4}     & \multicolumn{1}{l|}{5}     & \multicolumn{1}{l|}{6}     & \multicolumn{1}{l|}{7}     & \multicolumn{1}{l|}{8}     & \multicolumn{1}{l|}{9}     & 10    \\ \hline
+\multicolumn{1}{|l|}{Nr} & \multicolumn{1}{l|}{1}     & \multicolumn{1}{l|}{2}     & \multicolumn{1}{l|}{3}     & \multicolumn{1}{l|}{4}     & \multicolumn{1}{l|}{5}     & \multicolumn{1}{l|}{6}     & \multicolumn{1}{l|}{7}     & \multicolumn{1}{l|}{8}     & \multicolumn{1}{l|}{9}     & 10    \\ \hline
 \multicolumn{1}{|l|}{Date}   & \multicolumn{1}{l|}{25.02} & \multicolumn{1}{l|}{25.02} & \multicolumn{1}{l|}{25.02} & \multicolumn{1}{l|}{25.02} & \multicolumn{1}{l|}{26.02} & \multicolumn{1}{l|}{26.02} & \multicolumn{1}{l|}{26.02} & \multicolumn{1}{l|}{26.02} & \multicolumn{1}{l|}{26.02} & 26.02 \\ \hline
 \multicolumn{1}{|l|}{Start}  & \multicolumn{1}{l|}{20:50} & \multicolumn{1}{l|}{21:20} & \multicolumn{1}{l|}{22:20} & \multicolumn{1}{l|}{22:50} & \multicolumn{1}{l|}{11:10} & \multicolumn{1}{l|}{11:40} & \multicolumn{1}{l|}{12:10} & \multicolumn{1}{l|}{12:40} & \multicolumn{1}{l|}{13:10} & 13:40 \\ \hline
 \multicolumn{1}{|l|}{End}    & \multicolumn{1}{l|}{20:52} & \multicolumn{1}{l|}{21:21} & \multicolumn{1}{l|}{22:22} & \multicolumn{1}{l|}{22:52} & \multicolumn{1}{l|}{11:11} & \multicolumn{1}{l|}{11:41} & \multicolumn{1}{l|}{12:11} & \multicolumn{1}{l|}{12:41} & \multicolumn{1}{l|}{13:11} & 13:41 \\ \hline
 \multicolumn{11}{|c|}{\textbf{Remove bin}}                                                                                                                                                                                                                                                                \\ \hline
-\multicolumn{1}{|l|}{Number} & \multicolumn{1}{l|}{1}     & \multicolumn{1}{l|}{2}     & \multicolumn{1}{l|}{3}     & \multicolumn{1}{l|}{4}     & \multicolumn{1}{l|}{5}     & \multicolumn{1}{l|}{6}     & \multicolumn{1}{l|}{7}     & \multicolumn{1}{l|}{8}     & \multicolumn{1}{l|}{9}     & 10    \\ \hline
+\multicolumn{1}{|l|}{Nr} & \multicolumn{1}{l|}{1}     & \multicolumn{1}{l|}{2}     & \multicolumn{1}{l|}{3}     & \multicolumn{1}{l|}{4}     & \multicolumn{1}{l|}{5}     & \multicolumn{1}{l|}{6}     & \multicolumn{1}{l|}{7}     & \multicolumn{1}{l|}{8}     & \multicolumn{1}{l|}{9}     & 10    \\ \hline
 \multicolumn{1}{|l|}{Date}   & \multicolumn{1}{l|}{26.02} & \multicolumn{1}{l|}{26.02} & \multicolumn{1}{l|}{26.02} & \multicolumn{1}{l|}{27.02} & \multicolumn{1}{l|}{27.02} & \multicolumn{1}{l|}{27.02} & \multicolumn{1}{l|}{27.02} & \multicolumn{1}{l|}{27.02} & \multicolumn{1}{l|}{27.02} & 27.02 \\ \hline
 \multicolumn{1}{|l|}{Start}  & \multicolumn{1}{l|}{15:22} & \multicolumn{1}{l|}{15:30} & \multicolumn{1}{l|}{15:35} & \multicolumn{1}{l|}{15:05} & \multicolumn{1}{l|}{15:10} & \multicolumn{1}{l|}{15:15} & \multicolumn{1}{l|}{15:20} & \multicolumn{1}{l|}{15:25} & \multicolumn{1}{l|}{15:30} & 15:35 \\ \hline
 \multicolumn{1}{|l|}{End}    & \multicolumn{1}{l|}{15:23} & \multicolumn{1}{l|}{15:31} & \multicolumn{1}{l|}{15:36} & \multicolumn{1}{l|}{15:06} & \multicolumn{1}{l|}{15:11} & \multicolumn{1}{l|}{15:16} & \multicolumn{1}{l|}{15:21} & \multicolumn{1}{l|}{15:26} & \multicolumn{1}{l|}{15:31} & 15:36 \\ \hline
 \multicolumn{11}{|c|}{\textbf{Physical triggered cleaning}}                                                                                                                                                                                                                                               \\ \hline
-\multicolumn{1}{|l|}{Number} & \multicolumn{1}{l|}{1}     & \multicolumn{1}{l|}{2}     & \multicolumn{1}{l|}{3}     & \multicolumn{1}{l|}{4}     & \multicolumn{1}{l|}{5}     & \multicolumn{1}{l|}{6}     & \multicolumn{1}{l|}{7}     & \multicolumn{1}{l|}{8}     & \multicolumn{1}{l|}{9}     & 10    \\ \hline
+\multicolumn{1}{|l|}{Nr} & \multicolumn{1}{l|}{1}     & \multicolumn{1}{l|}{2}     & \multicolumn{1}{l|}{3}     & \multicolumn{1}{l|}{4}     & \multicolumn{1}{l|}{5}     & \multicolumn{1}{l|}{6}     & \multicolumn{1}{l|}{7}     & \multicolumn{1}{l|}{8}     & \multicolumn{1}{l|}{9}     & 10    \\ \hline
 \multicolumn{1}{|l|}{Date}   & \multicolumn{1}{l|}{25.02} & \multicolumn{1}{l|}{25.02} & \multicolumn{1}{l|}{25.02} & \multicolumn{1}{l|}{25.02} & \multicolumn{1}{l|}{25.02} & \multicolumn{1}{l|}{26.02} & \multicolumn{1}{l|}{26.02} & \multicolumn{1}{l|}{26.02} & \multicolumn{1}{l|}{26.02} & 26.02 \\ \hline
 \multicolumn{1}{|l|}{Start}  & \multicolumn{1}{l|}{22:00} & \multicolumn{1}{l|}{22:30} & \multicolumn{1}{l|}{23:00} & \multicolumn{1}{l|}{23:20} & \multicolumn{1}{l|}{23:40} & \multicolumn{1}{l|}{00:00} & \multicolumn{1}{l|}{00:20} & \multicolumn{1}{l|}{00:40} & \multicolumn{1}{l|}{01:06} & 01:31 \\ \hline
 \multicolumn{1}{|l|}{End}    & \multicolumn{1}{l|}{22:12} & \multicolumn{1}{l|}{22:45} & \multicolumn{1}{l|}{23:15} & \multicolumn{1}{l|}{23:35} & \multicolumn{1}{l|}{23:55} & \multicolumn{1}{l|}{00:15} & \multicolumn{1}{l|}{00:35} & \multicolumn{1}{l|}{00:55} & \multicolumn{1}{l|}{01:20} & 01:45 \\ \hline
 \multicolumn{11}{|c|}{\textbf{Automated cleaning}}                                                                                                                                                                                                                                                        \\ \hline
-\multicolumn{1}{|l|}{Number} & \multicolumn{1}{l|}{1}     & \multicolumn{1}{l|}{2}     & \multicolumn{1}{l|}{3}     & \multicolumn{1}{l|}{4}     & \multicolumn{1}{l|}{5}     & \multicolumn{1}{l|}{6}     & \multicolumn{1}{l|}{7}     & \multicolumn{1}{l|}{8}     & \multicolumn{1}{l|}{9}     & 10    \\ \hline
+\multicolumn{1}{|l|}{Nr} & \multicolumn{1}{l|}{1}     & \multicolumn{1}{l|}{2}     & \multicolumn{1}{l|}{3}     & \multicolumn{1}{l|}{4}     & \multicolumn{1}{l|}{5}     & \multicolumn{1}{l|}{6}     & \multicolumn{1}{l|}{7}     & \multicolumn{1}{l|}{8}     & \multicolumn{1}{l|}{9}     & 10    \\ \hline
 \multicolumn{1}{|l|}{Date}   & \multicolumn{1}{l|}{25.02} & \multicolumn{1}{l|}{26.02} & \multicolumn{1}{l|}{26.02} & \multicolumn{1}{l|}{26.02} & \multicolumn{1}{l|}{26.02} & \multicolumn{1}{l|}{27.02} & \multicolumn{1}{l|}{27.02} & \multicolumn{1}{l|}{27.02} & \multicolumn{1}{l|}{27.02} & 27.02 \\ \hline
 \multicolumn{1}{|l|}{Start}  & \multicolumn{1}{l|}{21:32} & \multicolumn{1}{l|}{01:53} & \multicolumn{1}{l|}{15:43} & \multicolumn{1}{l|}{17:00} & \multicolumn{1}{l|}{22:11} & \multicolumn{1}{l|}{07:57} & \multicolumn{1}{l|}{08:51} & \multicolumn{1}{l|}{11:03} & \multicolumn{1}{l|}{12:04} & 13:36 \\ \hline
 \multicolumn{1}{|l|}{End}    & \multicolumn{1}{l|}{21:50} & \multicolumn{1}{l|}{02:10} & \multicolumn{1}{l|}{15:55} & \multicolumn{1}{l|}{17:12} & \multicolumn{1}{l|}{22:23} & \multicolumn{1}{l|}{08:10} & \multicolumn{1}{l|}{09:02} & \multicolumn{1}{l|}{11:13} & \multicolumn{1}{l|}{12:16} & 13:48 \\ \hline
 \end{tabular}
 \end{table}
+
+During the traffic capturing and event triggering it was done some interesting observations. Whenever changes was done to schedule cleaning through the application, the robot vacuum cleaner made a sound. The job is probably saved and sent to the vacuum cleaner right a way. Another observation on the scheduled cleaning was that, the robot vacuum cleaner always made a start cleaning sound and started the clean within 1 minutes before the clean was actually configures. If the cleaning was scheduled 08:00, it would start 07:59:30-50.
+During physical cleaning the robot vacuum cleaner several times though it had been placed in a new floor or room and started doing smart floor detection. The duration of this discovery process is mush more time consuming that the actual clean. This is probably the reason why physical triggered cleaning event 2 and 9 in Oslo had a long duration compared to the average.
+During the Application start event it looks like the application is using some time to pull all the new data from the vacuum cleaner.
+
+\section{Traffic processing}
+The basic traffic processing is done with Wireshark, different protocols and reoccurring traffic. All identified flows in the standby traffic will be irrelevant for the different events that the research will look into. 
+
+\subsection{Protocols}
+The different protocol occurrence in the standby capture in showed in \ref{tab:ProtocolStatistics}.
+
+\begin{table}[H]
+\centering
+\caption{Protocol Statistics}
+\label{tab:ProtocolStatistics}
+\begin{tabular}{|l|l|l|l|}
+\hline
+\multicolumn{1}{|c|}{\textbf{Transport protocol}} & \textbf{Percentage}     & \textbf{Service protocol} & \textbf{Percentage} \\ \hline
+\multirow{}{UDP}                              & \multirow{}{49,2} & DHCP    & 0,1            \\ \cline{3-4} 
+                                                  &                         & DNS                       & 48,6                \\ \cline{3-4} 
+                                                  &                         & NTP                       & 0,4                 \\ \hline
+TCP                                               & 26,2                    & NA                        & NA                  \\ \hline
+ARP                                               & 24,6                    & NA                        & NA                  \\ \hline
+\end{tabular}
+\end{table}
+
+\subsubsection{Service protocols}
+The network service protocols NTP, DHCP, DNS and ARP has vital functionality, but is not necessarily related to the events handled in this research. We will in this section determine if they can be applied to the base filer or not. 
+
+\paragraph{DHCP} is used for both LAN and WLAN in the samrt home environment and is controlling the ip-address which the robot vacuum cleaner and the Access point receives. To make the setup, easier the ISP router was configures to reserve an IP address for the access point. The reason for this is that the access point should not get a new IP-address on the simulated WAN interface during the capturing, making the capturing filter miss traffic. In the WLAN the access point it self is handling the DHCP scope. The DHCP traffic is therefore irrelevant since it will only confirm the reservations done in both ISP routers.
+
+\paragraph{ARP} is only to link LAN MAC addresses to IP network addresses. This is only active in a single broadcast domain, the arp traffic captured in LAN is therefore between the access point and the ISP router, and not be affected by events. 
+
+\paragraph{NTP} is used to sync time, and is occurring regularly in the traffic flow. In the traffic flow there is a request to FQDN 0.irobot.pool.ntp.org two times everyday \ref{fig:ntp_dns}. These request happens at the same time of day 03:36 and 15:36, after the A record response is received the continuous NTP traffic changes the corresponding host to one of the addresses in the DNS response, this can be seen in \ref{fig:ntp_dns} NTP is therefore added to the base filter.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/NTP_wireshark .png}
+    \caption{0.irobot.pool.ntp.org DNS resopnse}
+    \label{fig:ntp_dns}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/ntp_dns.png}
+    \caption{NTP and DNS realtion}
+    \label{fig:ntp_dns}
+\end{figure}
+
+\paragraph{DNS} is used by both the robot vacuum cleaner and the access point. The access point is using DNS request to determine if it is connected to Internet or not. This request is for a.root-servers.net, shown in \ref{fig:dns_a-root}. These packegaes can be removed.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/DNS_a-root.png}
+    \caption{Reoccurring DNS Internet test}
+    \label{fig:dns_a-root}
+\end{figure}
+
+There is two more reocuring DNS reqests created from the TP-link access point. These are requested every three days, most likely to search for updates or upload statistics, and can therefore be excluded.
+
+\begin{itemize}
+    \item n-devs-gw.tplinkcloud.com
+    \item n-deventry-gw.tplinkcloud.com
+\end{itemize}
+
+The Irobot roomba is also requesting these four DNS FQDN once or twice a day: 
+\begin{itemize}
+    \item 0.irobot.pool.ntp.org
+    \item disc-prod.iot.irobotapi.com
+    \item unauth1.prod.iot.irobotapi.com
+    \item a2uowfjvhio0fa.iot.us-east-1.amazonaws.com
+\end{itemize}
+
+After unauth1.prod.iot.irobotapi.com and disc-prod.iot.irobotapi.com, is requested there is a shot traffic flow between the robot vacuum cleaner and the FQDN. If these addresses are opened in a web-browser, this message is prompted \textit{"message":"Missing Authentication Token"}. We are missing the token, which the robot vacuum cleaner authenticate with. 
+
+a2uowfjvhio0fa.iot.us-east-1.amazonaws.com is requested once a day. Each time the robot vacuum cleaner terminates the continuous tcp connections, and opens a new tcp connection to one of the addresses in the response. After the initial tcp handshake it is transferred a lot of data to the new corresponding irobot cloud, before is resumes to what looks like a tcp keep-alive. All these requests are reoccurring and can be excluded from event traffic. 
+
+\subsection{TCP traffic}
+Based on the traffic capture it looks like the vacuum cleaner is using tcp to communicate with the cloud service. Since the vacuum cleaner is behind a WAN ISP NAT, the communication needs to be initialized from the vacuum cleaner, and the connection to be held open by continuous traffic flow. This flow is shown in \ref{fig:tcp_keep-alive}. The larges package send in this keep-alive flow is 97 bytes, it is reasonable to assume that all traffic carrying event data will be more then 97 bytes. All tcp packages less then 97 bytes can therefore be excluded. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/tcp_keep-alive.png}
+    \caption{Reoccurring DNS Internet test}
+    \label{fig:tcp_keep-alive}
+\end{figure}
+
+\subsection{Data processing results}
+The result on this section is a base filter used to exclude all irrelevant data in the event capturing files. From the abow subsections, all DHCP , ARP and NTP can be excluded. The dns request to a.root-servers.net can be handled by the same filter as the tcp keep-alive since both request and response is less then 98 bytes. The base filter will therefor be:
+\\
+\textit{!ntp \&\& !dhcp \&\& !arp \&\& frame.len > 97}
+\\
+Some of the other reoccurring DNS requests and data correspondence could still be included, but can more easily be identified. When the filter is applied to the standby capture file, only 0,8 percent of the traffic is left. This makes the manual rule detection process much more efficient. 
+
+\section{Data Analysis}
+In this section the entire analysis process for each individual event will be presented separately. In the last subsection there will be a summary and comparison on the different signatures that is found. The process for each event is shown in \ref{fig:dataanalysisprocess}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/data-analysis-process.png}
+    \caption{Data Analysis Process}
+    \label{fig:dataanalysisprocess}
+\end{figure}
+
+\subsection{Data analysis for scheduled cleaning}
+The overall characteristics for this event is shown in \ref{tab:scoverall}. All event have similar over all statistics, which make the number of 5 tests more sufficient. 
+
+\begin{table}[H]
+\centering
+\caption{Scheduled cleaning, overall statistics}
+\label{tab:scoverall}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Event} & \textbf{Packet number} & \textbf{Total bytes sent} \\ \hline
+Event 1        & 2541                   & 3669941                   \\ \hline
+Event 2        & 2633                   & 3678959                   \\ \hline
+Event 3        & 2622                   & 3660004                   \\ \hline
+Event 4        & 2524                   & 3629262                   \\ \hline
+Event 5        & 2627                   & 3658515                   \\ \hline
+Event 6        & 2608                   & 3729110                   \\ \hline
+Event 7        & 2596                   & 3645238                   \\ \hline
+Event 8        & 2655                   & 3685536                   \\ \hline
+Event 9        & 2573                   & 3713211                   \\ \hline
+Event 10       & 2636                   & 3768883                   \\ \hline
+Average        & 2601.5                 & 3683865.9                 \\ \hline
+\end{tabular}
+\end{table}
+
+
+\subsubsection{Protocol identification}
+In scheduled cleaning there is an average protocol distribution according to \ref{tab:scanalysisdist}. All the udp traffic is DNS request, one to each of these FQDNs:
+
+\begin{itemize}
+    \item \item 0550315.ingest.sentry.io
+    \item S3.amasoneaws.com
+\end{itemize}
+
+First the request to \textit{0550315.ingest.sentry.io}, the vacuum cleaner then establish a shot tcp session with the ip address responded. When this session is terminated, the vacuum cleaner establish a new tcp sesison to S3.amasoneaws.com. During this session the vaccum cleaner transfer a huge amount of traffic. The amount varies between the different events. This is probably because it is uploading information about the clean.   
+\begin{table}[H]
+\centering
+\caption{Protocol Statistics Scheduled cleaning}
+\label{tab:scanalysisdist}
+\begin{tabular}{|c|c|}
+\hline
+\textbf{Transport protocol} & \textbf{Percentage} \\ \hline
+UDP                         & 0,2                 \\ \hline
+TCP                         & 99,8                \\ \hline
+\end{tabular}
+\end{table}
+
+In \ref{fig:Sc-graph}, the overall traffic flow is displayed. the large spike of traffic is the session between the vacuum cleaner and S3.amasoneaws.com.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/SC-graph.png}
+    \caption{Scheduled clean event 2}
+    \label{fig:Sc-graph}
+\end{figure}
+
+\subsubsection{Traffic sequence}
+In the sequence identification we will use the same method as the researchers in \cite{pingpong}. All traffic has the smart home wan address as source or destination, by using pyshark all 20 first packet lengths is extracted. Only the first 20 is extracted since this is the event triggering, and not cleaning traffic. The first 8 packet lengths is represented in \ref{tab:sclengthseq}, and the identified sequence is highlighted in \colorbox{green}{green}.
+
+
+\begin{table}[H]
+\small
+\centering
+\caption{Scheduled cleaning, length sequence}
+\label{tab:sclengthseq}
+\begin{tabular}{|l|l|l|l|l|l|l|l|l|}
+\hline
+Event 1  & \colorbox{green}{S 179} & \colorbox{green}{S 160} & D 346  & \colorbox{green}{S 175} & \colorbox{green}{S 482} & D 1142 & \colorbox{green}{S 179} & \colorbox{green}{S 441} \\ \hline
+Event 2  & \colorbox{green}{S 175} & \colorbox{green}{S 482} & D 1142 & \colorbox{green}{S 179} & \colorbox{green}{S 442} & D 1102 & \colorbox{green}{S 179} & \colorbox{green}{S 448}  \\ \hline
+Event 3  & \colorbox{green}{S 179} & \colorbox{green}{S 160} & D 346  & \colorbox{green}{S 175} & \colorbox{green}{S 482} & D 1142 & \colorbox{green}{S 179} & \colorbox{green}{S 442}  \\ \hline
+Event 4  & \colorbox{green}{S 179} & \colorbox{green}{S 442} & D 1102 & \colorbox{green}{S 175} & \colorbox{green}{S 482} & D 1142 & \colorbox{green}{S 179} & \colorbox{green}{S 448}  \\ \hline
+Event 5  & \colorbox{green}{S 179} & \colorbox{green}{S 253} & D 626  & \colorbox{green}{S 179} & \colorbox{green}{S 448} & D 1108 & \colorbox{green}{S 179} & \colorbox{green}{S 448}  \\ \hline
+Event 6  & \colorbox{green}{S 179} & \colorbox{green}{S 442} & D 1102 & \colorbox{green}{S 175} & \colorbox{green}{S 482} & D 1142 & \colorbox{green}{S 179} & \colorbox{green}{S 448}  \\ \hline
+Event 7  & \colorbox{green}{S 179} & \colorbox{green}{S 160} & D 346  & \colorbox{green}{S 175} & \colorbox{green}{S 482} & D 1142 & \colorbox{green}{S 179} & \colorbox{green}{S 442}  \\ \hline
+Event 8  & \colorbox{green}{S 179} & \colorbox{green}{S 160} & D 346  & \colorbox{green}{S 175} & \colorbox{green}{S 482} & D 1142 & \colorbox{green}{S 179} & \colorbox{green}{S 442}  \\ \hline
+Event 9  & \colorbox{green}{S 179} & \colorbox{green}{S 160} & D 346  & \colorbox{green}{S 175} & \colorbox{green}{S 482} & D 1142 & \colorbox{green}{S 179} & \colorbox{green}{S 442}  \\ \hline
+Event 10 & \colorbox{green}{S 175} & \colorbox{green}{S 482} & D 1142 & \colorbox{green}{S 179} & \colorbox{green}{S 442} & D 1102 & \colorbox{green}{S 179} & \colorbox{green}{S 448}  \\ \hline
+\end{tabular}
+\end{table}
+
+From the packet sequence there is two different sequences identified, and that is: 
+\\
+\textit{[176, 173, 179, 443, 177]}, + - 15 bytes on all values 
+\\
+\textit{[176, 443, 179, 443, 177]} + - 5 bytes in all values
+\\
+The sequences has + or - on all the values because that identified values are varies in length.
+
+\subsubsection{Signeture}
+The signature for scheduled cleaning event is the present of DNS request for, \textit{0550315.ingest.sentry.io} and \textit{S3.amasoneaws.com} and traffic sequence \textit{[176, 173, 179, 443, 177]} or \textit{[176, 443, 179, 443, 177]}.
