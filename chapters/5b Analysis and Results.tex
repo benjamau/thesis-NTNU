@@ -310,7 +310,7 @@ The different protocol occurrence in the standby capture in showed in \ref{tab:P
 \begin{tabular}{|l|l|l|l|}
 \hline
 \multicolumn{1}{|c|}{\textbf{Transport protocol}} & \textbf{Percentage}     & \textbf{Service protocol} & \textbf{Percentage} \\ \hline
-\multirow{}{UDP}                              & \multirow{}{49,2} & DHCP    & 0,1            \\ \cline{3-4} 
+\multirow{3}*{UDP}                              & \multirow{3}*{49,2} & DHCP    & 0,1            \\ \cline{3-4} 
                                                   &                         & DNS                       & 48,6                \\ \cline{3-4} 
                                                   &                         & NTP                       & 0,4                 \\ \hline
 TCP                                               & 26,2                    & NA                        & NA                  \\ \hline
@@ -396,16 +396,18 @@ In this section the entire analysis process for each individual event will be pr
     \label{fig:dataanalysisprocess}
 \end{figure}
 
+
+
 \subsection{Data analysis for scheduled cleaning}
-The overall characteristics for this event is shown in \ref{tab:scoverall}. All event have similar over all statistics, which make the number of 5 tests more sufficient. 
+The overall characteristics for this event is shown in \ref{tab:scoverall} and \ref{tab:scoverallDRA}. As presented the average and the standard deviation within the different environments is small. This supports the hypothesis that is is sufficient with 20 captured events to perform further analysis.
 
 \begin{table}[H]
 \centering
-\caption{Scheduled cleaning, overall statistics}
+\caption{Scheduled cleaning, overall statistics Oslo smart home}
 \label{tab:scoverall}
 \begin{tabular}{|l|l|l|}
 \hline
-\textbf{Event} & \textbf{Packet number} & \textbf{Total bytes sent} \\ \hline
+\textbf{Event} & \textbf{Number of pkt} & \textbf{Total bytes sent} \\ \hline
 Event 1        & 2541                   & 3669941                   \\ \hline
 Event 2        & 2633                   & 3678959                   \\ \hline
 Event 3        & 2622                   & 3660004                   \\ \hline
@@ -420,16 +422,44 @@ Average        & 2601.5                 & 3683865.9                 \\ \hline
 \end{tabular}
 \end{table}
 
+\begin{table}[H]
+\centering
+\caption{Scheduled cleaning, overall statistics Drammen}
+\label{tab:scoverallDRA}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Event} & \textbf{Number of pkt} & \textbf{Total bytes sent} \\ \hline
+Event 1        & 996                    & 1354755                   \\ \hline
+Event 2        & 1052                   & 1422052                   \\ \hline
+Event 3        & 1150                   & 1592566                   \\ \hline
+Event 4        & 1317                   & 1650499                   \\ \hline
+Event 5        & 1166                   & 1570805                   \\ \hline
+Event 6        & 1179                   & 1612050                   \\ \hline
+Event 7        & 1160                   & 1582275                   \\ \hline
+Event 8        & 1177                   & 1610090                   \\ \hline
+Event 9        & 1205                   & 1634883                   \\ \hline
+Event 10       & 1170                   & 1590726                   \\ \hline
+Average        & 1157.2                 & 1562070.1                 \\ \hline
+\end{tabular}
+\end{table}
+
+In \ref{fig:Sc-graph}, the overall traffic flow is displayed. The traffic flow is consistanse for all the captured events, and the large spike of traffic is the session between the vacuum cleaner and S3.amasoneaws.com. There is also a increase in generated traffic at the start of the event, but this is 
+deafened by the large upload traffic after finished cleaning.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/SC-graph.png}
+    \caption{Scheduled clean event 2}
+    \label{fig:Sc-graph}
+\end{figure}
 
 \subsubsection{Protocol identification}
-In scheduled cleaning there is an average protocol distribution according to \ref{tab:scanalysisdist}. All the udp traffic is DNS request, one to each of these FQDNs:
+In scheduled cleaning there is an average protocol distribution according to \ref{tab:scanalysisdist}, this is after the base filter created in data processing is applied. The two UDP packages is DNS response for FQDN:
 
 \begin{itemize}
-    \item \item 0550315.ingest.sentry.io
+    \item 0550315.ingest.sentry.io
     \item S3.amasoneaws.com
 \end{itemize}
 
-First the request to \textit{0550315.ingest.sentry.io}, the vacuum cleaner then establish a shot tcp session with the ip address responded. When this session is terminated, the vacuum cleaner establish a new tcp sesison to S3.amasoneaws.com. During this session the vaccum cleaner transfer a huge amount of traffic. The amount varies between the different events. This is probably because it is uploading information about the clean.   
 \begin{table}[H]
 \centering
 \caption{Protocol Statistics Scheduled cleaning}
@@ -442,17 +472,17 @@ TCP                         & 99,8                \\ \hline
 \end{tabular}
 \end{table}
 
-In \ref{fig:Sc-graph}, the overall traffic flow is displayed. the large spike of traffic is the session between the vacuum cleaner and S3.amasoneaws.com.
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{figures/SC-graph.png}
-    \caption{Scheduled clean event 2}
-    \label{fig:Sc-graph}
-\end{figure}
-
+After the cleaning is done, there is two new sessions established. First a session to \textit{0550315.ingest.sentry.io} where the vacuum cleaner is transferring some data. When this session is closed it opens a session to \textit{s3.amazoneaws.com}, where there is sent large amounts of traffic, before the session is closed. Both sessions are established and teared down within a minute after the cleaning is done. This is most likely two different update services where \textit{s3.amazoneaws.com} is where sensed information is uploaded and processed after clenaing.
+ 
 \subsubsection{Traffic sequence}
-In the sequence identification we will use the same method as the researchers in \cite{pingpong}. All traffic has the smart home wan address as source or destination, by using pyshark all 20 first packet lengths is extracted. Only the first 20 is extracted since this is the event triggering, and not cleaning traffic. The first 8 packet lengths is represented in \ref{tab:sclengthseq}, and the identified sequence is highlighted in \colorbox{green}{green}.
-
+In the sequence identification we will use the same method as the researchers in \cite{pingpong}. All traffic has the smart home wan address as source or destination due to the infrastructure design. We extract the first 20 bytes of the packet sequence to try to identify a common sequence for all Scheduled cleaning events. Only the first bytes are examined because that is where the event is triggered. In \ref{tab:sclengthseq}, the 20 first bytes of each event is presented. The horizontal values are packet packet lengths, where notation 's' and 'd' notations are WAN address source and destination.  
+For this event we can see that the traffic generated by the vacuum cleaner is following a pattern: 
+\\
+\textit{[176, 173, 179, 443, 177]}, + - 15 bytes on all values 
+\\
+\textit{[176, 443, 179, 443, 177]} + - 5 bytes in all values
+\\
+The reason for adding + or - 15 and 5 is because the actual value is varies with the deviation of 15 and 5.
 
 \begin{table}[H]
 \small
@@ -461,26 +491,593 @@ In the sequence identification we will use the same method as the researchers in
 \label{tab:sclengthseq}
 \begin{tabular}{|l|l|l|l|l|l|l|l|l|}
 \hline
-Event 1  & \colorbox{green}{S 179} & \colorbox{green}{S 160} & D 346  & \colorbox{green}{S 175} & \colorbox{green}{S 482} & D 1142 & \colorbox{green}{S 179} & \colorbox{green}{S 441} \\ \hline
-Event 2  & \colorbox{green}{S 175} & \colorbox{green}{S 482} & D 1142 & \colorbox{green}{S 179} & \colorbox{green}{S 442} & D 1102 & \colorbox{green}{S 179} & \colorbox{green}{S 448}  \\ \hline
-Event 3  & \colorbox{green}{S 179} & \colorbox{green}{S 160} & D 346  & \colorbox{green}{S 175} & \colorbox{green}{S 482} & D 1142 & \colorbox{green}{S 179} & \colorbox{green}{S 442}  \\ \hline
-Event 4  & \colorbox{green}{S 179} & \colorbox{green}{S 442} & D 1102 & \colorbox{green}{S 175} & \colorbox{green}{S 482} & D 1142 & \colorbox{green}{S 179} & \colorbox{green}{S 448}  \\ \hline
-Event 5  & \colorbox{green}{S 179} & \colorbox{green}{S 253} & D 626  & \colorbox{green}{S 179} & \colorbox{green}{S 448} & D 1108 & \colorbox{green}{S 179} & \colorbox{green}{S 448}  \\ \hline
-Event 6  & \colorbox{green}{S 179} & \colorbox{green}{S 442} & D 1102 & \colorbox{green}{S 175} & \colorbox{green}{S 482} & D 1142 & \colorbox{green}{S 179} & \colorbox{green}{S 448}  \\ \hline
-Event 7  & \colorbox{green}{S 179} & \colorbox{green}{S 160} & D 346  & \colorbox{green}{S 175} & \colorbox{green}{S 482} & D 1142 & \colorbox{green}{S 179} & \colorbox{green}{S 442}  \\ \hline
-Event 8  & \colorbox{green}{S 179} & \colorbox{green}{S 160} & D 346  & \colorbox{green}{S 175} & \colorbox{green}{S 482} & D 1142 & \colorbox{green}{S 179} & \colorbox{green}{S 442}  \\ \hline
-Event 9  & \colorbox{green}{S 179} & \colorbox{green}{S 160} & D 346  & \colorbox{green}{S 175} & \colorbox{green}{S 482} & D 1142 & \colorbox{green}{S 179} & \colorbox{green}{S 442}  \\ \hline
-Event 10 & \colorbox{green}{S 175} & \colorbox{green}{S 482} & D 1142 & \colorbox{green}{S 179} & \colorbox{green}{S 442} & D 1102 & \colorbox{green}{S 179} & \colorbox{green}{S 448}  \\ \hline
+Event 1  & \colorbox{pink}{S 179} & \colorbox{pink}{S 160} & D 346  & \colorbox{pink}{S 175} & \colorbox{pink}{S 482} & D 1142 & \colorbox{pink}{S 179} & \colorbox{pink}{S 441} \\ \hline
+Event 2  & \colorbox{pink}{S 175} & \colorbox{pink}{S 482} & D 1142 & \colorbox{pink}{S 179} & \colorbox{pink}{S 442} & D 1102 & \colorbox{pink}{S 179} & \colorbox{pink}{S 448}  \\ \hline
+Event 3  & \colorbox{pink}{S 179} & \colorbox{pink}{S 160} & D 346  & \colorbox{pink}{S 175} & \colorbox{pink}{S 482} & D 1142 & \colorbox{pink}{S 179} & \colorbox{pink}{S 442}  \\ \hline
+Event 4  & \colorbox{pink}{S 179} & \colorbox{pink}{S 442} & D 1102 & \colorbox{pink}{S 175} & \colorbox{pink}{S 482} & D 1142 & \colorbox{pink}{S 179} & \colorbox{pink}{S 448}  \\ \hline
+Event 5  & \colorbox{pink}{S 179} & \colorbox{pink}{S 253} & D 626  & \colorbox{pink}{S 179} & \colorbox{pink}{S 448} & D 1108 & \colorbox{pink}{S 179} & \colorbox{pink}{S 448}  \\ \hline
+Event 6  & \colorbox{pink}{S 179} & \colorbox{pink}{S 442} & D 1102 & \colorbox{pink}{S 175} & \colorbox{pink}{S 482} & D 1142 & \colorbox{pink}{S 179} & \colorbox{pink}{S 448}  \\ \hline
+Event 7  & \colorbox{pink}{S 179} & \colorbox{pink}{S 160} & D 346  & \colorbox{pink}{S 175} & \colorbox{pink}{S 482} & D 1142 & \colorbox{pink}{S 179} & \colorbox{pink}{S 442}  \\ \hline
+Event 8  & \colorbox{pink}{S 179} & \colorbox{pink}{S 160} & D 346  & \colorbox{pink}{S 175} & \colorbox{pink}{S 482} & D 1142 & \colorbox{pink}{S 179} & \colorbox{pink}{S 442}  \\ \hline
+Event 9  & \colorbox{pink}{S 179} & \colorbox{pink}{S 160} & D 346  & \colorbox{pink}{S 175} & \colorbox{pink}{S 482} & D 1142 & \colorbox{pink}{S 179} & \colorbox{pink}{S 442}  \\ \hline
+Event 10 & \colorbox{pink}{S 175} & \colorbox{pink}{S 482} & D 1142 & \colorbox{pink}{S 179} & \colorbox{pink}{S 442} & D 1102 & \colorbox{pink}{S 179} & \colorbox{pink}{S 448}  \\ \hline
 \end{tabular}
 \end{table}
 
-From the packet sequence there is two different sequences identified, and that is: 
-\\
-\textit{[176, 173, 179, 443, 177]}, + - 15 bytes on all values 
-\\
-\textit{[176, 443, 179, 443, 177]} + - 5 bytes in all values
-\\
-The sequences has + or - on all the values because that identified values are varies in length.
+
+\begin{table}[H]
+\centering
+\caption{ Scheduled cleaning, length sequence Drammen}
+\label{tab:SCsequenceDrammen}
+\begin{tabular}{|l|l|l|l|l|l|l|l|l|}
+\hline
+Event 1  & S 175   & S 466 & D 1094 & S 179 & S 442 & D 1102 & S 179 & S 448 \\ \hline
+Event 2  & S 175   & S 466 & D 1094 & S 179 & S 442 & D 1102 & S 179 & S 448 \\ \hline
+Event 3  & S 175   & S 466 & D 1094 & S 179 & S 442 & D 1102 & S 179 & S 448 \\ \hline
+Event 4  & S 175   & S 466 & D 1094 & S 179 & S 442 & D 1102 & S 179 & S 448 \\ \hline
+Event 5  & S 175   & S 466 & D 1094 & S 179 & S 442 & D 1102 & S 179 & S 448 \\ \hline
+Event 6  & S 175   & S 466 & D 1094 & S 179 & S 442 & D 1102 & S 179 & S 448 \\ \hline
+Event 7  & S 175   & S 466 & D 1094 & S 179 & S 442 & D 1102 & S 179 & S 448 \\ \hline
+Event 8  & S 175   & S 466 & D 1094 & S 179 & S 442 & D 1102 & S 179 & S 448 \\ \hline
+Event 9  & S 172   & S 234 & D 552  & S 175 & S 466 & D 1094 & S 179 & S 448 \\ \hline
+Event 10 & S 175   & S 466 & D 1094 & S 179 & S 442 & D 1102 & S 179 & S 448 \\ \hline
+\end{tabular}
+\end{table}
 
 \subsubsection{Signeture}
-The signature for scheduled cleaning event is the present of DNS request for, \textit{0550315.ingest.sentry.io} and \textit{S3.amasoneaws.com} and traffic sequence \textit{[176, 173, 179, 443, 177]} or \textit{[176, 443, 179, 443, 177]}.
+The signature for scheduled cleaning event is the present of DNS request for, \textit{0550315.ingest.sentry.io} and \textit{0550315.ingest.sentry.io} and traffic sequence \textit{[176, 173, 179, 443, 177]} or \textit{[176, 443, 179, 443, 177]}.
+
+The identified signature for Schedule cleaning includes the present of two DNS responses and one of the given sequences.  
+
+\begin{itemize}
+    \item \textit{0550315.ingest.sentry.io}
+    \item \textit{s3.amazoneaws.com}
+    \item \textit{[176, 173, 179, 443, 177]} +- 15
+    \item \textit{[176, 443, 179, 443, 177]} +- 5
+\end{itemize}
+
+
+
+%New section Automated cleaning
+
+
+
+\subsection{Data analysis for Automated cleaning}
+The overall characteristics for this event is shown in \ref{tab:scoverall} and \ref{tab:scoverallDRA}. As presented the average and the standard deviation within the different environments is small. This supports the hypothesis that is is sufficient with 20 captured events to perform further analysis. Event 6 in Drammen is off the other captures. During analysis all identifications for a cleaning event was present, but the upload to the could service was limited. This could be to some disruption in the transaction or the lack of updates for the vacuum cleaner. 
+
+\begin{table}[H]
+\centering
+\caption{Automated cleaning, overall statistics Oslo}
+\label{tab:ACoverallOSL}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Event} & \textbf{Packet number} & \textbf{Total bytes sent} \\ \hline
+Event 1        & 2703                   & 3882164                   \\ \hline
+Event 2        & 2736                   & 3811206                   \\ \hline
+Event 3        & 2659                   & 3818287                   \\ \hline
+Event 4        & 2681                   & 3747788                   \\ \hline
+Event 5        & 2589                   & 3704329                   \\ \hline
+Event 6        & 236                    & 237163                    \\ \hline
+Event 7        & 2701                   & 3860634                   \\ \hline
+Event 8        & 2631                   & 3770236                   \\ \hline
+Event 9        & 2609                   & 3738406                   \\ \hline
+Event 10       & 2609                   & 3799896                   \\ \hline
+Average        & 2415.4                 & 3437010.9                 \\ \hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Automated cleaning, overall statistics Drammen}
+\label{tab:ACoverallDRA}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Event} & \textbf{Packet number} & \textbf{Total bytes sent} \\ \hline
+Event 1        & 1074                   & 1443851                   \\ \hline
+Event 2        & 1131                   & 1524076                   \\ \hline
+Event 3        & 1209                   & 1644223                   \\ \hline
+Event 4        & 1207                   & 1641145                   \\ \hline
+Event 5        & 1013                   & 1422457                   \\ \hline
+Event 6        & 1013                   & 1422457                   \\ \hline
+Event 7        & 1220                   & 1726862                   \\ \hline
+Event 8        & 1248                   & 1715015                   \\ \hline
+Event 9        & 1227                   & 1669154                   \\ \hline
+Event 10       & 1456                   & 1838832                   \\ \hline
+Average        & 1179.8                 & 1604807.2                 \\ \hline
+\end{tabular}
+\end{table}
+
+In \ref{fig:Ac-graph}, the overall traffic flow is displayed. The traffic flow is consistence for all the captured events, and the large spike of traffic is the session between the vacuum cleaner and S3.amasoneaws.com. There is also a increase in generated traffic at the start of the event, but this is 
+deafened by the large upload traffic after finished cleaning.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/AC-graph.png}
+    \caption{Automated clean event 2 Oslo}
+    \label{fig:Ac-graph}
+\end{figure}
+
+\subsubsection{Protocol Identification}
+In Automated cleaning there is an average protocol distribution according to \ref{tab:acanalysisdist}. All the udp traffic is DNS request, one to each of these FQDNs:
+
+\begin{itemize}
+    \item 0550315.ingest.sentry.io
+    \item S3.amasoneaws.com
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\caption{Protocol Statistics Automated cleaning}
+\label{tab:acanalysisdist}
+\begin{tabular}{|c|c|}
+\hline
+\textbf{Transport protocol} & \textbf{Percentage} \\ \hline
+UDP                         & 0,1                 \\ \hline
+TCP                         & 99,9                \\ \hline
+\end{tabular}
+\end{table}
+
+After the cleaning is done, there is two new sessions established. First a session to \textit{0550315.ingest.sentry.io} where the vacuum cleaner is transferring some data. When this session is closed it opens a session to \textit{s3.amazoneaws.com}, where there is sent large amounts of traffic, before the session is closed. Both sessions are established and teared down within a minute after the cleaning is done. This is most likely two different update services where \textit{s3.amazoneaws.com} is where sensed information is uploaded and processed after cleaning.
+
+\subsubsection{Traffic Sequence}
+The method in \cite{pingpong} is used manually on the first 20 packet lengths of the event. Inn all 20 events there is a common traffic sequence initiated from the could service, this is \textit{[316, 289]}. these packet lengths dose not occur in the same order, but is received together as a pair. So both \textit{[316, 289]} and \textit{[289, 315]} are valid. The actual packet length also varies with +- 1 byte. 
+The following sequence is a response from the vacuum cleaner with packet lengths of \textit{[176, 187]}. Followed by a response from the cloud server with packet length 408 or 409. The identified sequence is therefore: \textit{[316, 289, 176, 187, 409]} or \textit{[289, 316, 176, 187, 409]} +- 1 byte.
+
+\begin{table}[H]
+\centering
+\caption{Automated cleaning, length sequence Oslo}
+\label{tab:ACSequenceOslo}
+\begin{tabular}{|l|l|l|l|l|l|l|l|l|}
+\hline
+Event 1  & D 289 & D 316 & D 316 & S 176 & S 187 & D 409 & D 404 & S 175  \\ \hline
+Event 2  & D 510 & S 176 & S 187 & D 409 & D 271 & S 179 & S 440 & D 1100 \\ \hline
+Event 3  & D 315 & D 288 & S 176 & S 186 & D 408 & D 271 & D 271 & S 175  \\ \hline
+Event 4  & D 315 & D 288 & S 176 & S 186 & D 408 & D 404 & S 175 & S 480  \\ \hline
+Event 5  & D 316 & D 289 & S 176 & S 187 & D 409 & D 271 & S 175 & S 405  \\ \hline
+Event 6  & D 316 & D 289 & S 176 & S 187 & D 409 & D 271 & S 175 & S 405  \\ \hline
+Event 7  & S 172 & S 179 & D 392 & D 315 & D 288 & S 176 & S 186 & D 408  \\ \hline
+Event 8  & S 172 & S 179 & D 392 & D 315 & D 288 & S 176 & S 186 & D 408  \\ \hline
+Event 9  & D 289 & D 316 & S 176 & S 187 & D 409 & D 271 & S 179 & S 440  \\ \hline
+Event 10 & S 172 & S 291 & D 859 & D 288 & D 315 & S 176 & S 186 & D 408  \\ \hline
+\end{tabular}
+\end{table}
+
+
+\begin{table}[H]
+\centering
+\caption{Automated cleaning, length sequence Drammen}
+\label{tab:ACSequenceDrammen}
+\begin{tabular}{|l|l|l|l|l|l|l|l|l|}
+\hline
+Event 1  & D 315 & D 288 & S 176 & S 186 & D 408 & D 404 & S 175 & S 425  \\ \hline
+Event 2  & D 289 & D 316 & S 176 & S 187 & D 409 & D 404 & S 175 & S 449  \\ \hline
+Event 3  & S 172 & S 288 & D 714 & D 316 & D 289 & S 176 & S 187 & D 409  \\ \hline
+Event 4  & D 315 & D 288 & S 176 & S 186 & D 408 & D 404 & S 179 & S 439  \\ \hline
+Event 5  & D 289 & D 316 & S 176 & S 187 & D 409 & D 404 & S 175 & S 410  \\ \hline
+Event 6  & D 289 & D 316 & D 316 & S 176 & S 187 & D 409 & D 404 & S 175  \\ \hline
+Event 7  & D 288 & D 315 & S 176 & S 186 & D 408 & D 404 & S 175 & S 449  \\ \hline
+Event 8  & D 289 & D 316 & S 297 & D 409 & D 404 & S 179 & S 440 & D 1100 \\ \hline
+Event 9  & S 172 & S 233 & D 551 & D 315 & D 288 & S 176 & S 186 & D 408  \\ \hline
+Event 10 & D 289 & D 316 & S 176 & S 187 & D 409 & D 404 & S 179 & S 440  \\ \hline
+\end{tabular}
+\end{table}
+
+\subsubsection{Signature}
+The identified signature for Automated cleaning includes the present of two DNS responses and one of the given sequences.  
+
+\begin{itemize}
+    \item \textit{0550315.ingest.sentry.io}
+    \item \textit{s3.amazoneaws.com}
+    \item \textit{[316, 289, 176, 187, 409]} +- 1
+    \item \textit{[289, 316, 176, 187, 409]} +- 1
+\end{itemize}
+
+
+\subsection{Data Analysis for Application Triggered Cleaning}
+The overall characteristics for this event is shown in \ref{tab:TCoverallOSL} and \ref{tab:TCoverallDRA}. As presented the average and the standard deviation within the different environments is small. This supports the hypothesis that is is sufficient with 20 captured events to perform further analysis.
+
+\begin{table}[H]
+\centering
+\caption{Application triggered cleaning, overall statistics Oslo}
+\label{tab:TCoverallOSL}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Event} & \textbf{Packet number} & \textbf{Total bytes sent} \\ \hline
+Event 1        & 2667                   & 3732218                   \\ \hline
+Event 2        & 2686                   & 3730748                   \\ \hline
+Event 3        & 2656                   & 3710958                   \\ \hline
+Event 4        & 3065                   & 4365510                   \\ \hline
+Event 5        & 2880                   & 4076534                   \\ \hline
+Event 6        & 2633                   & 3771269                   \\ \hline
+Event 7        & 2661                   & 3786648                   \\ \hline
+Event 8        & 2647                   & 3798184                   \\ \hline
+Event 9        & 2729                   & 3798630                   \\ \hline
+Event 10       & 2639                   & 3786194                   \\ \hline
+Average        & 2726.3                 & 3855689.3                 \\ \hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Application triggered cleaning, overall statistics Drammen}
+\label{tab:TCoverallDRA}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Event} & \textbf{Packet number} & \textbf{Total bytes sent} \\ \hline
+Event 1        & 708                    & 802488                    \\ \hline
+Event 2        & 724                    & 945100                    \\ \hline
+Event 3        & 740                    & 956470                    \\ \hline
+Event 4        & 809                    & 1071613                   \\ \hline
+Event 5        & 824                    & 1088836                   \\ \hline
+Event 6        & 869                    & 1157323                   \\ \hline
+Event 7        & 855                    & 1144086                   \\ \hline
+Event 8        & 929                    & 1248783                   \\ \hline
+Event 9        & 988                    & 1321061                   \\ \hline
+Event 10       & 983                    & 1339631                   \\ \hline
+Average        & 842.9                  & 1107539.1                 \\ \hline
+\end{tabular}
+\end{table}
+
+In \ref{fig:Tc-graph}, the overall traffic flow is displayed. The traffic flow is consistence for all the captured events, and the large spike of traffic is the session between the vacuum cleaner and S3.amasoneaws.com. There is also a increase in generated traffic at the start of the event, but this is 
+deafened by the large upload traffic after finished cleaning.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/TC-graph.png}
+    \caption{Automated clean event 2 Oslo}
+    \label{fig:Tc-graph}
+\end{figure}
+
+\subsubsection{Protocol Identification}
+In Automated cleaning there is an average protocol distribution according to \ref{tab:tcanalysisdist}. All the udp traffic is DNS request, one to each of these FQDNs:
+\\
+figure
+\\
+
+
+
+After the cleaning is done, there is two new sessions established. First a session to \textit{0550315.ingest.sentry.io} where the vacuum cleaner is transferring some data. When this session is closed it opens a session to \textit{s3.amazoneaws.com}, where there is sent large amounts of traffic, before the session is closed. Both sessions are established and teared down within a minute after the cleaning is done. This is most likely two different update services where \textit{s3.amazoneaws.com} is where sensed information is uploaded and processed after cleaning.
+
+\subsubsection{Traffic sequence}
+The method in [pingpong] is used manually on the first 20 packet lengths of the
+event.All events has a common sequence initiated from the cloud service, \textit{[209, 289, 316]} where the two last packets can be in mixed order. The vacuum cleaner then responds with two packets with length \textit{176, 187}, before the could service responds with a package with length \textit{409 or 408}. The entire packet sequence is then \textit{[316, 289, 176, 187, 409] or [289, 316, 176, 187, 409]
+}
+
+\begin{table}[H]
+\centering
+\caption{Application triggered cleaning, length sequence Oslo}
+\label{tab:ACSequenceOslo}
+\begin{tabular}{|l|l|l|l|l|l|l|l|l|}
+\hline
+Event 1  & D 208 & D 288 & D 315 & S 176  & S 186  & D 408 & S 176 & S 1285 \\ \hline
+Event 2  & S 179 & S 160 & D 346 & D 209  & D 289  & D 316 & S 176 & S 187  \\ \hline
+Event 3  & D 208 & D 289 & D 316 & S 176  & S 187  & D 409 & S 176 & S 1514 \\ \hline
+Event 4  & S 179 & S 160 & D 346 & D 208  & D 288  & D 315 & S 176 & S 186  \\ \hline
+Event 5  & S 179 & S 160 & D 346 & D 208  & D 288  & D 315 & S 176 & S 186  \\ \hline
+Event 6  & S 179 & S 160 & D 346 & S 172  & S 233  & D 551 & D 209 & D 289  \\ \hline
+Event 7  & D 209 & D 315 & D 288 & S 176  & S 186  & D 408 & S 176 & S 1201 \\ \hline
+Event 8  & S 179 & S 160 & D 346 & D 209  & D 316  & D 289 & S 176 & S 187  \\ \hline
+Event 9  & D 209 & D 510 & S 176 & S 1201 & S 176  & S 187 & D 409 & D 555  \\ \hline
+Event 10 & D 209 & D 288 & D 315 & S 176  & S 1201 & S 176 & S 186 & D 408  \\ \hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Application triggered cleaning, length sequence Drammen}
+\label{tab:ACSequenceDrammen}
+\begin{tabular}{|l|l|l|l|l|l|l|l|l|}
+\hline
+Event 1  & D 209 & D 315 & D 288 & S 176 & S 186  & D 408 & S 176 & S 949  \\ \hline
+Event 2  & D 208 & D 289 & D 316 & S 176 & S 187  & D 409 & S 176 & S 1514 \\ \hline
+Event 3  & D 209 & D 316 & D 289 & S 176 & S 187  & D 409 & S 176 & S 1514 \\ \hline
+Event 4  & D 209 & D 288 & D 315 & S 176 & S 1085 & S 176 & S 186 & D 408  \\ \hline
+Event 5  & S 179 & S 160 & D 346 & D 209 & D 316  & D 289 & S 176 & S 1514 \\ \hline
+Event 6  & S 172 & S 179 & D 392 & D 208 & D 315  & D 288 & S 176 & S 186  \\ \hline
+Event 7  & D 207 & D 289 & D 316 & S 176 & S 187  & D 409 & S 176 & S 1514 \\ \hline
+Event 8  & D 207 & D 315 & D 288 & S 176 & S 186  & D 408 & S 176 & S 1514 \\ \hline
+Event 9  & D 208 & D 315 & D 288 & S 176 & S 985  & S 176 & S 186 & D 408  \\ \hline
+Event 10 & D 208 & D 315 & D 288 & S 176 & S 186  & D 408 & S 176 & S 1514 \\ \hline
+\end{tabular}
+\end{table}
+
+\subsubsection{Signature}
+The identified signature for Application triggered cleaning includes the present of two DNS
+responses and one of the given sequences.
+• 0550315.ingest.sentry.io
+• s3.amazoneaws.com
+• [209, 316, 289, 176, 187, 409] +- 1
+• [209, 289, 316, 176, 187, 409] +- 1
+
+
+
+
+
+%new event
+
+
+
+
+
+
+
+
+
+\subsection{Data Analysis for Physical triggered cleaning}
+
+\begin{table}[H]
+\centering
+\caption{Physical triggered cleaning, overall statistics Oslo}
+\label{tab:PCoverallOSL}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Event} & \textbf{Packet number} & \textbf{Total bytes sent} \\ \hline
+Event 1        & 2791                   & 3965147                   \\ \hline
+Event 2        & 3180                   & 4357126                   \\ \hline
+Event 3        & 2926                   & 4033946                   \\ \hline
+Event 4        & 2872                   & 4112516                   \\ \hline
+Event 5        & 2944                   & 4209443                   \\ \hline
+Event 6        & 2984                   & 4122412                   \\ \hline
+Event 7        & 2925                   & 4160462                   \\ \hline
+Event 8        & 2869                   & 4100166                   \\ \hline
+Event 9        & 2918                   & 4227626                   \\ \hline
+Event 10       & 2768                   & 3957559                   \\ \hline
+Average        & 2917.7                 & 4124640.3                 \\ \hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Physical triggered cleaning, overall statistics Drammen}
+\label{tab:PCoverallDRA}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Event} & \textbf{Packet number} & \textbf{Total bytes sent} \\ \hline
+Event 1        & 1078                   & 1481677                   \\ \hline
+Event 2        & 1087                   & 1484930                   \\ \hline
+Event 3        & 1125                   & 1520872                   \\ \hline
+Event 4        & 1088                   & 1517429                   \\ \hline
+Event 5        & 1150                   & 1555605                   \\ \hline
+Event 6        & 1086                   & 1507084                   \\ \hline
+Event 7        & 1092                   & 1501894                   \\ \hline
+Event 8        & 1115                   & 1510971                   \\ \hline
+Event 9        & 1098                   & 1485863                   \\ \hline
+Event 10       & 1100                   & 1492331                   \\ \hline
+Average        & 1101.9                 & 1505865.6                 \\ \hline
+\end{tabular}
+\end{table}
+
+In \ref{fig:Pc-graph}, the overall traffic flow is displayed. the large spike of traffic is the session between the vacuum cleaner and S3.amasoneaws.com.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/PC-graph.png}
+    \caption{Automated clean event 2 Oslo}
+    \label{fig:Pc-graph}
+\end{figure}
+
+\subsubsection{Protocol Identification}
+
+\subsubsection{Traffic sequence}
+
+\begin{table}[H]
+\centering
+\caption{Physical triggered cleaning, length sequence Oslo}
+\label{tab:PCSequenceOslo}
+\begin{tabular}{|l|l|l|l|l|l|l|l|l|}
+\hline
+Event 1  & S 179 & S 440 & D 1100 & S 179 & S 446 & D 1106 & S 176 & S 475 \\ \hline
+Event 2  & S 179 & S 159 & D 345  & S 179 & S 446 & D 1106 & S 176 & S 290 \\ \hline
+Event 3  & S 179 & S 160 & D 346  & S 179 & S 440 & D 1100 & S 179 & S 446 \\ \hline
+Event 4  & S 179 & S 160 & D 346  & S 179 & S 440 & D 1100 & S 179 & S 446 \\ \hline
+Event 5  & S 179 & S 440 & D 1100 & S 179 & S 446 & D 1106 & S 176 & S 290 \\ \hline
+Event 6  & S 179 & S 440 & D 1100 & S 179 & S 446 & D 1106 & S 175 & S 369 \\ \hline
+Event 7  & S 172 & S 179 & D 392  & S 179 & S 446 & D 1106 & S 176 & S 290 \\ \hline
+Event 8  & S 179 & S 440 & D 1100 & S 179 & S 446 & D 1106 & S 176 & S 290 \\ \hline
+Event 9  & S 179 & S 440 & D 1100 & S 179 & S 446 & D 1106 & S 176 & S 290 \\ \hline
+Event 10 & S 179 & S 159 & D 345  & S 179 & S 440 & D 1100 & S 179 & S 446 \\ \hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Physical triggered cleaning, length sequence Drammen}
+\label{tab:PCSequenceDrammen}
+\begin{tabular}{|l|l|l|l|l|l|l|l|l|}
+\hline
+Event 1  & S 175 & S 314 & D 745  & S 179 & S 447 & D 1107 & S 179 & S 447 \\ \hline
+Event 2  & S 179 & S 446 & D 1106 & S 176 & S 290 & S 175  & S 338 & D 809 \\ \hline
+Event 3  & S 179 & S 440 & D 1100 & S 179 & S 446 & D 1106 & S 176 & S 290 \\ \hline
+Event 4  & S 179 & S 159 & D 345  & S 179 & S 440 & D 1100 & S 179 & S 446 \\ \hline
+Event 5  & S 179 & S 439 & D 1099 & S 179 & S 445 & D 1105 & S 175 & S 314 \\ \hline
+Event 6  & S 179 & S 439 & D 1099 & S 179 & S 445 & D 1105 & S 175 & S 314 \\ \hline
+Event 7  & S 179 & S 160 & D 346  & S 179 & S 439 & D 1099 & S 179 & S 445 \\ \hline
+Event 8  & S 172 & S 233 & D 551  & S 179 & S 439 & D 1099 & S 179 & S 445 \\ \hline
+Event 9  & S 179 & S 440 & D 1100 & S 179 & S 446 & D 1106 & S 175 & S 338 \\ \hline
+Event 10 & S 179 & S 440 & D 1100 & S 179 & S 446 & D 1106 & S 175 & S 338 \\ \hline
+\end{tabular}
+\end{table}
+
+\subsubsection{Signature}
+
+
+\subsection{Data Analysis for Application Start}
+
+\begin{table}[H]
+\centering
+\caption{Application start, overall statistics Oslo}
+\label{tab:ASoverallOslo}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Event} & \textbf{Packet number} & \textbf{Total bytes sent} \\ \hline
+Event 1        & 11                     & 5202                      \\ \hline
+Event 2        & 22                     & 8698                      \\ \hline
+Event 3        & 20                     & 8644                      \\ \hline
+Event 4        & 17                     & 7135                      \\ \hline
+Event 5        & 20                     & 8580                      \\ \hline
+Event 6        & 20                     & 8608                      \\ \hline
+Event 7        & 20                     & 9213                      \\ \hline
+Event 8        & 23                     & 9527                      \\ \hline
+Event 9        & 20                     & 8730                      \\ \hline
+Event 10       & 19                     & 8877                      \\ \hline
+Average        & 19.2                   & 8321.4                    \\ \hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Application start, overall statistics Drammen}
+\label{tab:ASoverallDRA}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Event} & \textbf{Packet number} & \textbf{Total bytes sent} \\ \hline
+Event 1        & 30                     & 20875                     \\ \hline
+Event 2        & 26                     & 19568                     \\ \hline
+Event 3        & 8                      & 2655                      \\ \hline
+Event 4        & 8                      & 2659                      \\ \hline
+Event 5        & 26                     & 19561                     \\ \hline
+Event 6        & 34                     & 21897                     \\ \hline
+Event 7        & 29                     & 20222                     \\ \hline
+Event 8        & 25                     & 19468                     \\ \hline
+Event 9        & 33                     & 21744                     \\ \hline
+Event 10       & 26                     & 19570                     \\ \hline
+Average        & 24,5                   & 16821.9                   \\ \hline
+\end{tabular}
+\end{table}
+
+\subsubsection{Protocol Identification}
+
+\subsubsection{Traffic sequence}
+
+\begin{table}[H]
+\centering
+\caption{Application start, length sequence Oslo}
+\label{tab:ASSequenceOslo}
+\begin{tabular}{|l|l|l|l|l|l|l|l|l|}
+\hline
+Event 1  & D 209 & D 315 & D 288 & S 296  & D 408  & S 176 & S 1053 & D 1514 \\ \hline
+Event 2  & D 208 & D 316 & D 289 & S 176  & S 187  & D 409 & S 176  & S 1052 \\ \hline
+Event 3  & D 208 & D 537 & S 176 & S 186  & D 408  & S 176 & S 1052 & D 1514 \\ \hline
+Event 4  & S 179 & S 160 & D 346 & D 208  & D 289  & D 316 & S 176  & S 187  \\ \hline
+Event 5  & D 209 & D 315 & D 288 & S 176  & S 186  & D 408 & S 176  & S 1053 \\ \hline
+Event 6  & D 205 & D 289 & D 316 & S 176  & S 1046 & S 176 & S 187  & D 409  \\ \hline
+Event 7  & D 207 & D 315 & D 288 & S 176  & S 186  & D 408 & S 176  & S 1051 \\ \hline
+Event 8  & S 179 & S 159 & D 345 & D 207  & D 289  & D 316 & S 176  & S 187  \\ \hline
+Event 9  & D 207 & D 508 & S 176 & S 1050 & S 176  & S 186 & D 408  & D 1514 \\ \hline
+Event 10 & D 208 & D 316 & D 289 & S 176  & S 1052 & S 176 & S 187  & D 409  \\ \hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Application start, length sequence Drammen}
+\label{tab:ASSequenceDrammen}
+\begin{tabular}{|l|l|l|l|l|l|l|l|l|}
+\hline
+Event 1  & D 209 & D 288 & D 315 & S 296 & D 408  & S 176 & S 1514 & S 376  \\ \hline
+Event 2  & D 209 & D 289 & D 316 & S 176 & S 187  & D 409 & S 176  & S 1514 \\ \hline
+Event 3  & D 209 & D 315 & D 288 & S 176 & S 186  & D 408 & S 176  & S 1514 \\ \hline
+Event 4  & D 209 & D 289 & D 316 & S 176 & S 1514 & S 159 & S 176  & S 187  \\ \hline
+Event 5  & S 172 & S 179 & D 392 & D 208 & D 315  & D 288 & S 176  & S 186  \\ \hline
+Event 6  & D 208 & D 289 & D 316 & S 176 & S 187  & D 409 & S 176  & S 1514 \\ \hline
+Event 7  & D 208 & D 288 & D 315 & S 176 & S 1361 & S 176 & S 186  & D 408  \\ \hline
+Event 8  & D 208 & D 289 & D 316 & S 176 & S 187  & D 409 & S 176  & S 1514 \\ \hline
+Event 9  & D 208 & D 288 & D 315 & S 176 & S 1514 & S 126 & S 176  & S 186  \\ \hline
+Event 10 & D 208 & D 289 & D 316 & S 176 & S 187  & D 409 & S 176  & S 1389 \\ \hline
+\end{tabular}
+\end{table}
+
+\subsubsection{Signature}
+
+
+\subsection{Data Analysis for Bin Remove}
+
+\begin{table}[H]
+\centering
+\caption{Bin remove, overall statistics Oslo}
+\label{tab:BRoverallOslo}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Event} & \textbf{Packet number} & \textbf{Total bytes sent} \\ \hline
+Event 1        & 6                      & 2512                      \\ \hline
+Event 2        & 15                     & 5765                      \\ \hline
+Event 3        & 12                     & 4366                      \\ \hline
+Event 4        & 15                     & 7869                      \\ \hline
+Event 5        & 12                     & 5022                      \\ \hline
+Event 6        & 17                     & 8426                      \\ \hline
+Event 7        & 18                     & 8492                      \\ \hline
+Event 8        & 12                     & 5022                      \\ \hline
+Event 9        & 11                     & 4956                      \\ \hline
+Event 10       & 12                     & 5022                      \\ \hline
+Average        & 13                     & 5745.2                    \\ \hline
+\end{tabular}
+\end{table}
+
+
+\begin{table}[H]
+\centering
+\caption{Bin remove, overall statistics Drammen }
+\label{tab:BRoverallDRA}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Event} & \textbf{Packet number} & \textbf{Total bytes sent} \\ \hline
+Event 1        & 23                     & 8610                      \\ \hline
+Event 2        & 24                     & 10149                     \\ \hline
+Event 3        & 9                      & 4407                      \\ \hline
+Event 4        & 12                     & 5022                      \\ \hline
+Event 5        & 8                      & 4333                      \\ \hline
+Event 6        & 9                      & 4399                      \\ \hline
+Event 7        & 17                     & 6595                      \\ \hline
+Event 8        & 9                      & 4399                      \\ \hline
+Event 9        & 15                     & 7869                      \\ \hline
+Event 10       & 12                     & 5022                      \\ \hline
+Average        & 13,8                   & 6080.5                    \\ \hline
+\end{tabular}
+\end{table}
+
+\subsubsection{Protocol Identification}
+
+\subsubsection{Traffic sequence}
+
+\begin{table}[H]
+\centering
+\caption{Bin removal, length sequence Oslo}
+\label{tab:BRSquenceOslo}
+\begin{tabular}{|l|l|l|l|l|l|l|l|l|}
+\hline
+Event 1  & S 179   & S 450  & D 1110 & S 179  & S 186  & D 410  & S 179 & S 450 \\ \hline
+Event 2  & S   187 & D 411  & S 179  & S 448  & D 1108 & S 179  & S 186 & D 410 \\ \hline
+Event 3  & S   179 & S 187  & D 411  & S 179  & S 450  & D 1110 & S 179 & S 450 \\ \hline
+Event 4  & S   492 & D 1222 & S 179  & S 450  & D 1110 & S 179  & S 186 & D 410 \\ \hline
+Event 5  & S   187 & D 411  & S 179  & S 448  & D 1108 & S 179  & S 186 & D 410 \\ \hline
+Event 6  & S 603   & D 1220 & S 179  & S 448  & D 1108 & S 179  & S 186 & D 410 \\ \hline
+Event 7  & S   490 & D 1220 & S 179  & S 448  & D 1108 & S 179  & S 186 & D 410 \\ \hline
+Event 8  & D   411 & S 179  & S 448  & D 1108 & S 179  & S 186  & D 410 & S 172 \\ \hline
+Event 9  & S   490 & D 1220 & S 179  & S 448  & D 1108 & S 179  & S 186 & D 410 \\ \hline
+Event 10 & S   448 & D 1108 & S 179  & S 448  & D 1108 & S 179  & S 186 & D 410 \\ \hline
+\end{tabular}
+\end{table}
+
+
+\begin{table}[H]
+\centering
+\caption{Bin removal, length sequence Drammen}
+\label{tab:BRSquenceDrammen}
+\begin{tabular}{|l|l|l|l|l|l|l|l|l|}
+\hline
+Event 1  & S 179   & S 448  & D 1108 & S 179 & S 187  & D 411 &       &       \\ \hline
+Event 2  & S   187 & D 411  & S 179  & S 448 & D 1108 & S 179 & S 186 & D 410 \\ \hline
+Event 3  & S   187 & D 411  & S 179  & S 448 & D 1108 & S 179 & S 186 & D 410 \\ \hline
+Event 4  & S   179 & D 392  & S 179  & S 448 & D 1108 & S 179 & S 186 & D 410 \\ \hline
+Event 5  & S   448 & D 1108 & S 179  & S 187 & D 411  & S 172 & S 234 & D 552 \\ \hline
+Event 6  & S 179   & S 448  & D 1108 & S 179 & S 187  & D 411 & S 179 & S 448 \\ \hline
+Event 7  & S   187 & D 411  & S 179  & S 448 & D 1108 & S 179 & S 186 & D 410 \\ \hline
+Event 8  & S   448 & D 1108 & S 179  & S 448 & D 1108 & S 179 & S 186 & D 410 \\ \hline
+Event 9  & S   448 & D 1108 & S 179  & S 448 & D 1108 & S 179 & S 186 & D 410 \\ \hline
+Event 10 & S   187 & D 411  & S 179  & S 448 & D 1108 & S 179 & S 186 & D 410 \\ \hline
+\end{tabular}
+\end{table}
+\subsubsection{Signature}
+
+
+\subsection{Signature comparison}
+All cleaning events has the same DNS signature
