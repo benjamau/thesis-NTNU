@@ -1,25 +1,20 @@
 \chapter{Analysis and Results}
-In this chapter the analysis and the result of the research findings will be presented. The overall structure will follow the structure of the chapter Methodology to easier correlate method used and the presented analysis. 
+In this chapter the analysis and the result of the research findings will be presented. The overall structure will follow the structure of chapter \ref{cap:Method}.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{figures/AnalysisFlow.png}
-    \caption{Analysis Flow}
-    \label{fig:AnalysisFlow}
+    \includegraphics[width=\textwidth]{figures/Method_process.png}
+    \caption{Overall Method process}
+    \label{fig:Analysis_process}
 \end{figure}
+
+
 
 \section{Device and environment selection}
 Irobot Roomba i7 was selected as the preferred robot vacuum cleaner in this research, in the corresponding section in chapter Method. In this section the rest of the devices in the smart home environment will be presented. 
 
 \paragraph{Capturing platfrom}
-Capturing platform is chosen to be a Raspberry PI 3b+, loaded with Kali Linux operation system. The reason for this is the availability. The author of this thesis had available raspberry PIs through his work. Kali Lunux is open source and have deigned versions to run on Raspberry PI. The OS also includes the analysis tools Wireshark and Tshark that is required in this research. 
-An external Wi-Fi adapter is added to the Raspberry PI, this was recommended by \cite{wifi_adapter_monitor_mode}. This also allows data to be extracted from the capturing platform via ftp services on the build in wi-fi network interface card.
-
-\begin{itemize}
-    \item wlan0, is buildt in wi-fi interface card
-    \item wlan1, is the external TP-LINK TL-WN722N V2 adapter
-    \item eth0, is the buldt in ethernet IEEE 802.3 interface card
-\end{itemize}
+Capturing platform is chosen to be a Raspberry PI 3b+, loaded with Kali Linux operation system. The specifications are presented in \ref{tab:CapturingPlatfromSpec}
 
 \begin{table}[H]
 \centering
@@ -37,7 +32,7 @@ An external Wi-Fi adapter is added to the Raspberry PI, this was recommended by 
 \end{table}
 
 \paragraph{Analysis platform}
-HP Elitebook with windows 11 is used abs the analysis platform, the reason is the availability of the machine. It is installed with Wireshark, Tshark and VS code. 
+HP Elitebook with windows 11 is used as the analysis platform, the reason is the availability of the machine. It is installed with Wireshark, Tshark and Visual studio code. 
 
 \begin{table}[H]
 \centering
@@ -54,7 +49,7 @@ HP Elitebook with windows 11 is used abs the analysis platform, the reason is th
 \end{table}
 
 \paragraph{Access point}
-TP-Link Archer MR200 is acuired, this access point have LAN ports to connect towards the ISP router and wireless capabilities. It can separate connected WLAN and LAN with the use of Network address translation. 
+TP-Link Archer MR200 is acuired, this access point have LAN ports to connect towards the ISP router, for Internet access. It can separate connected WLAN and LAN with the use of Network address translation. 
 
 \begin{table}[H]
 \centering
@@ -85,7 +80,7 @@ A Cisco Catalyst 2960 series switch is used, this due to the support for SPAN po
 
 
 \subsection{Smart Home environment}
-All these devices connected will create the WLAN/LAN which is used in all environments through this research. The only change will be the Internet delivered by the ISP, if not local configuration and impact is not taken into account this could weekend the reliability of the result. Optimal there would be a completely different smart home infrastructure, but due to limited resources and time it was done with the same internal smart home network. The complete overview is illustrated in \ref{fig:SmartHomeSetup} 
+All these devices connected will create the WLAN/LAN, which is used in all environments through this research. The only change will be the Internet connection. As the access point will simulate a full smart home environment, the sounded LAN and SPAN port will not effect the robot vacuum cleaner. A figure of the network infrstructure is presented in \ref{fig:SmartHomeSetup}. 
 
 \begin{figure}[H]
     \centering
@@ -95,123 +90,11 @@ All these devices connected will create the WLAN/LAN which is used in all enviro
 \end{figure}
 
 
-\section{Event selection}
-In this section all the different event will be presented. These are based on different features for the Irobot Roomba i7 vacuum cleaner. The selected events are: 
-
-\begin{itemize}
-    \item \textbf{Standby event}, the vacuum cleaner is connected, but not interacted with. This will be used to identify standby traffic which can be filtered out for the events. 
-    \item \textbf{Scheduled cleaning}, users can configure scheduled cleaning jobs based on time and date. The vacuum cleaner will then start cleaning at the configured time. This could potentially expose some parts of the daily routine.
-    \item \textbf{Automated cleaning}, used integrated services such as location, smart lock and smart garage port to trigger events. For this research location integration with IFFF will be used to trigger the cleaning. If this could be identified, it could with high confidence say that the home owner left the resident.
-    \item \textbf{Application triggered cleaning}, user opens the Irobot application and manually triggers a cleaning job. Identification will show human interaction.
-    \item \textbf{Physical triggered cleaning}, user push a physical button on the vacuum cleaner to trigger cleaning. This would tell if the user is home. 
-    \item \textbf{Application start}, user starts the application on their phone. This will expose user interaction. 
-    \item \textbf{Bin remove}, user eject the bin and reenters it. this is the normal procedure when it is full. It can expose that user is home. 
-\end{itemize}
-
-\subsection{Event description}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{figures/EventTriggeringProcess.png}
-    \caption{Capturing process}
-    \label{fig:EventTriggeringProcess}
-\end{figure}
-
-\subsection{Event tests}
-In this section all the different test flows will be described. This will make the tests and results more reproducible. 
-
-\subsubsection{Standby Traffic}
-This test is executed to identify network traffic generated to the robot vacuum cleaner in a standby mode. This means that there is no interaction done by human. 
-
-\begin{itemize}
-    \item \textbf{Event flow} \begin{enumerate}
-                                    \item Start captuing of LAN and WLAN traffic
-                                    \item Wait 14 days without any human interaction
-                                    \item Stop capturing
-                                \end{enumerate}
-    \item \textbf{Number of events:} 1
-\end{itemize}
-
-\subsubsection{Scheduled Cleaning}
-Scheduled cleaning can be configured through the application. Users can schedule a cleaning, specifying area in the smart home, time which the cleaning should start, as well as how often this should occur. 
-\begin{itemize}
-    \item \textbf{Event flow} \begin{enumerate}
-                                    \item Schedule cleaning outside of event capture
-                                    \item Note the time when cleaning started
-                                    \item Note when "finished cleaning" notification is received
-                                \end{enumerate}
-    \item \textbf{Number of events in each environment:} 10
-\end{itemize}
-
-\subsubsection{Automated cleaning}
-Irobot has features to integrate other services as triggers for events. This includes IFFF location tracker, Agust smart lock system, ecobee termotat system, My Leviton smart home integration and MyQ garage system. In this research the IFFF location system will be used. Cleaning is then triggered when the users phone is x meters away from home, where x is between 100m and 1 km. 
-
-\begin{itemize}
-    \item \textbf{Event flow} \begin{enumerate}
-                                    \item Configure automated cleaning outside of event capture
-                                    \item Leave the smart home environment
-                                    \item Note when cleaning notification is received
-                                    \item Note when "finished cleaning" notification is received
-                                \end{enumerate}
-    \item \textbf{Number of events in each environment:} 10
-\end{itemize}
-
-\subsubsection{Application triggered cleaning}
-In the application users can trigger cleaning. There is a predefined "clean all" option, if the user have not customized. Cleaning is triggered when the user is pressing a cleaning option in the application.
-
-\begin{itemize}
-    \item \textbf{Event flow} \begin{enumerate}
-                                    \item Note time
-                                    \item Open the application and trigger "clean all" event
-                                    \item Note when "finished cleaning" notification is received
-                                \end{enumerate}
-    \item \textbf{Number of events in each environment:} 10
-\end{itemize}
-
-\subsubsection{Physical triggered cleaning}
-The Irobot roomba i7 has a physical cleaning button on top of the vacuum cleaner. A "clean all" vent is triggered when this button is pressed.
-
-\begin{itemize}
-    \item \textbf{Event flow} \begin{enumerate}
-                                    \item Note time
-                                    \item Press the physical clean button on the vacuum cleaner
-                                    \item Note when "finished cleaning" notification is received
-                                \end{enumerate}
-    \item \textbf{Number of events in each environment:} 10
-\end{itemize}
-
-\subsubsection{Open application}
-When the application is opened information will be displayed, through the application the user can interact and change setting. 
-
-\begin{itemize}
-    \item \textbf{Event flow} \begin{enumerate}
-                                    \item Note time
-                                    \item Open the application on the smart phone
-                                    \item wait for some time
-                                    \item Close application
-                                    \item Note time
-                                \end{enumerate}
-    \item \textbf{Number of events in each environment:} 10
-\end{itemize}
-
-\subsubsection{Remove bin}
-The Irobot roomba i7 has it own bin where dust is collected during clean. This can be removed if it is to be empty. The user will then have to physically remove and insert again. 
-
-\begin{itemize}
-    \item \textbf{Event flow} \begin{enumerate}
-                                    \item Note time
-                                    \item Remove the bin
-                                    \item wait ta least 40 seconds
-                                    \item Insert the bin
-                                    \item Note time
-                                \end{enumerate}
-    \item \textbf{Number of events in each environment:} 10
-\end{itemize}
-
-
 
 \section{Traffic Capturing}
-Standby traffic was captured between 8 and 22  of January, during this time period, no interaction with the vacuum cleaner was done. It was also continuously connected to the smart home SSID, so that it could receive traffic from the could services. The event traffic capturing is done is the two different environments according to the test matrices \ref{tab:TestMatrixEnv1} \ref{tab:TestMatrixEnv2}. The testing is done in testing intervals. All events was observers finished, before a new event was triggered. Capturing in Drammen was done during four days, due to limited availability of the smart home.  
+Standby traffic was captured between 8 and 22  of January, during this time period, no interaction with the vacuum cleaner was done. It was also continuously connected to the smart home SSID, so that it could receive traffic from the could servers. This standby event is only captured in Oslo environment.
+
+The rest of the events are captured both Oslo and Drammen environments according to the test matrices \ref{tab:TestMatrixEnv1} \ref{tab:TestMatrixEnv2}. All events was observers finished, before a new event was triggered. Capturing in Drammen was done during four days, due to limited availability of the smart home.  
 \begin{table}[H]
 \centering
 \small
@@ -294,14 +177,15 @@ Standby traffic was captured between 8 and 22  of January, during this time peri
 \end{table}
 
 During the traffic capturing and event triggering it was done some interesting observations. Whenever changes was done to schedule cleaning through the application, the robot vacuum cleaner made a sound. The job is probably saved and sent to the vacuum cleaner right a way. Another observation on the scheduled cleaning was that, the robot vacuum cleaner always made a start cleaning sound and started the clean within 1 minutes before the clean was actually configures. If the cleaning was scheduled 08:00, it would start 07:59:30-50.
-During physical cleaning the robot vacuum cleaner several times though it had been placed in a new floor or room and started doing smart floor detection. The duration of this discovery process is mush more time consuming that the actual clean. This is probably the reason why physical triggered cleaning event 2 and 9 in Oslo had a long duration compared to the average.
-During the Application start event it looks like the application is using some time to pull all the new data from the vacuum cleaner.
 
-\section{Traffic processing}
-The basic traffic processing is done with Wireshark, different protocols and reoccurring traffic. All identified flows in the standby traffic will be irrelevant for the different events that the research will look into. 
+During physical cleaning the robot vacuum cleaner several times though it had been placed in a new floor or room and started doing smart floor detection. The duration of this discovery process is mush more time consuming than the actual cleaning. This is probably the reason why physical triggered cleaning event 2 and 9 in Oslo had a long duration compared to the average.
+During the Application start event it looks like the application are pulling live data from the vacuum cleaner when started. This process takes some seconds to finish.
+
+\section{Traffic filtering}
+Traffic filtering is based on the identification of protocols and reoccurring traffic in the standby event capture. All traffic identified in this event is irrelevant for other event identification.  
 
 \subsection{Protocols}
-The different protocol occurrence in the standby capture in showed in \ref{tab:ProtocolStatistics}.
+The different protocol occurrence in the standby capture in showed in table \ref{tab:ProtocolStatistics}.
 
 \begin{table}[H]
 \centering
@@ -319,13 +203,13 @@ ARP                                               & 24,6                    & NA
 \end{table}
 
 \subsubsection{Service protocols}
-The network service protocols NTP, DHCP, DNS and ARP has vital functionality, but is not necessarily related to the events handled in this research. We will in this section determine if they can be applied to the base filer or not. 
+The network service protocols NTP, DHCP, DNS and ARP is vital for network functionality, but is not necessarily related to the events handled in this research. We will in this section determine if they can be applied to the base filer or not. 
 
-\paragraph{DHCP} is used for both LAN and WLAN in the samrt home environment and is controlling the ip-address which the robot vacuum cleaner and the Access point receives. To make the setup, easier the ISP router was configures to reserve an IP address for the access point. The reason for this is that the access point should not get a new IP-address on the simulated WAN interface during the capturing, making the capturing filter miss traffic. In the WLAN the access point it self is handling the DHCP scope. The DHCP traffic is therefore irrelevant since it will only confirm the reservations done in both ISP routers.
+\paragraph{DHCP} is used for both LAN and WLAN in the smart home environment and is controlling the ip-address which the robot vacuum cleaner and the Access point receives. Wireless traffic generated by the robot vacuum cleaner is encrypted on wi-fi header level, the IP address is therefor not relevant. To make the setup easier, the ISP router was configures to reserve an IP address for the access point. The reason for this is that the access point should not get a new IP-address on the simulated WAN interface during the capturing. This would result in loss of capturing data. All DHCP traffic can therefore be excluded.
 
-\paragraph{ARP} is only to link LAN MAC addresses to IP network addresses. This is only active in a single broadcast domain, the arp traffic captured in LAN is therefore between the access point and the ISP router, and not be affected by events. 
+\paragraph{ARP} is only to link LAN MAC addresses to IP network addresses. This is only active in a single broadcast domain. The arp traffic captured in LAN is therefore between the access point and the ISP router, and not relevant for the events. 
 
-\paragraph{NTP} is used to sync time, and is occurring regularly in the traffic flow. In the traffic flow there is a request to FQDN 0.irobot.pool.ntp.org two times everyday \ref{fig:ntp_dns}. These request happens at the same time of day 03:36 and 15:36, after the A record response is received the continuous NTP traffic changes the corresponding host to one of the addresses in the DNS response, this can be seen in \ref{fig:ntp_dns} NTP is therefore added to the base filter.
+\paragraph{NTP} is used to sync time, and is occurring regularly in the traffic flow. In the traffic flow there is a request to FQDN 0.irobot.pool.ntp.org two times everyday, this is presented in figure \ref{fig:ntp_dns}. These request happens at the same time of day 03:36 and 15:36, after the A record response is received the continuous NTP traffic changes the corresponding host to one of the addresses in the DNS response, this can be seen in figure \ref{fig:ntp_dns} NTP is therefore excluded.
 
 \begin{figure}[H]
     \centering
@@ -365,12 +249,12 @@ The Irobot roomba is also requesting these four DNS FQDN once or twice a day:
     \item a2uowfjvhio0fa.iot.us-east-1.amazonaws.com
 \end{itemize}
 
-After unauth1.prod.iot.irobotapi.com and disc-prod.iot.irobotapi.com, is requested there is a shot traffic flow between the robot vacuum cleaner and the FQDN. If these addresses are opened in a web-browser, this message is prompted \textit{"message":"Missing Authentication Token"}. We are missing the token, which the robot vacuum cleaner authenticate with. 
+After unauth1.prod.iot.irobotapi.com and disc-prod.iot.irobotapi.com, is requested there is a short traffic flow between the robot vacuum cleaner and the FQDNs. If these addresses are opened in a web-browser, this message is prompted \textit{"message":"Missing Authentication Token"}. We are missing the token, which the robot vacuum cleaner authenticates with. 
 
-a2uowfjvhio0fa.iot.us-east-1.amazonaws.com is requested once a day. Each time the robot vacuum cleaner terminates the continuous tcp connections, and opens a new tcp connection to one of the addresses in the response. After the initial tcp handshake it is transferred a lot of data to the new corresponding irobot cloud, before is resumes to what looks like a tcp keep-alive. All these requests are reoccurring and can be excluded from event traffic. 
+a2uowfjvhio0fa.iot.us-east-1.amazonaws.com is requested once a day. When the robot vacuum cleaner receives the response it terminates the ongoing tcp session with the cloud control server, and establish a new one with one of the Ip addresses in the dns response. Right after the establishment of the new control connection, a burst of traffic is sent between the hosts. This is probably some information exchange to the new server. An attacker will have to eavesdrop the WAN connection of a smart home for no longer then 24 hours to identify this request, and apply this to a traffic filter. DNS traffic can therefore not be excluded. 
 
-\subsection{TCP traffic}
-Based on the traffic capture it looks like the vacuum cleaner is using tcp to communicate with the cloud service. Since the vacuum cleaner is behind a WAN ISP NAT, the communication needs to be initialized from the vacuum cleaner, and the connection to be held open by continuous traffic flow. This flow is shown in \ref{fig:tcp_keep-alive}. The larges package send in this keep-alive flow is 97 bytes, it is reasonable to assume that all traffic carrying event data will be more then 97 bytes. All tcp packages less then 97 bytes can therefore be excluded. 
+\subsection{TCP Traffic}
+Based on the traffic capture it looks like the vacuum cleaner is using tcp to communicate with the cloud service. Since the vacuum cleaner is behind a WAN ISP NAT, the communication needs to be initialized from the vacuum cleaner, and the connection to be held open by continuous traffic flow. This flow is shown in figure \ref{fig:tcp_keep-alive}. The larges package send in this keep-alive flow is 97 bytes, it is reasonable to assume that all traffic carrying event data will be more then 97 bytes. All tcp packages less then 97 bytes can therefore be excluded. 
 
 \begin{figure}[H]
     \centering
@@ -379,7 +263,7 @@ Based on the traffic capture it looks like the vacuum cleaner is using tcp to co
     \label{fig:tcp_keep-alive}
 \end{figure}
 
-\subsection{Data processing results}
+\subsection{Data Filtering Results}
 The result on this section is a base filter used to exclude all irrelevant data in the event capturing files. From the abow subsections, all DHCP , ARP and NTP can be excluded. The dns request to a.root-servers.net can be handled by the same filter as the tcp keep-alive since both request and response is less then 98 bytes. The base filter will therefor be:
 \\
 \textit{!ntp \&\& !dhcp \&\& !arp \&\& frame.len > 97}
@@ -387,7 +271,7 @@ The result on this section is a base filter used to exclude all irrelevant data 
 Some of the other reoccurring DNS requests and data correspondence could still be included, but can more easily be identified. When the filter is applied to the standby capture file, only 0,8 percent of the traffic is left. This makes the manual rule detection process much more efficient. 
 
 \section{Data Analysis}
-In this section the entire analysis process for each individual event will be presented separately. In the last subsection there will be a summary and comparison on the different signatures that is found. The process for each event is shown in \ref{fig:dataanalysisprocess}
+In this section the entire analysis process for each individual event will be presented separately. In the last subsection there will be a summary and comparison on the different signatures identified. The process for each event is shown in figure \ref{fig:dataanalysisprocess}
 
 \begin{figure}[H]
     \centering
@@ -398,8 +282,8 @@ In this section the entire analysis process for each individual event will be pr
 
 
 
-\subsection{Data analysis for scheduled cleaning}
-The overall characteristics for this event is shown in \ref{tab:scoverall} and \ref{tab:scoverallDRA}. As presented the average and the standard deviation within the different environments is small. This supports the hypothesis that is is sufficient with 20 captured events to perform further analysis.
+\subsection{Data Analysis for Scheduled Cleaning}
+The overall characteristics for this event is shown in table \ref{tab:scoverall} and \ref{tab:scoverallDRA}. As presented the average and the standard deviation within the different environments is small. This supports the hypothesis that is is sufficient with 20 captured events to perform further analysis.
 
 \begin{table}[H]
 \centering
@@ -419,6 +303,7 @@ Event 8        & 2655                   & 3685536                   \\ \hline
 Event 9        & 2573                   & 3713211                   \\ \hline
 Event 10       & 2636                   & 3768883                   \\ \hline
 Average        & 2601.5                 & 3683865.9                 \\ \hline
+Standard deviation        & 43.03                 & 3683865.9                 \\ \hline
 \end{tabular}
 \end{table}
 
@@ -443,7 +328,7 @@ Average        & 1157.2                 & 1562070.1                 \\ \hline
 \end{tabular}
 \end{table}
 
-In \ref{fig:Sc-graph}, the overall traffic flow is displayed. The traffic flow is consistanse for all the captured events, and the large spike of traffic is the session between the vacuum cleaner and S3.amasoneaws.com. There is also a increase in generated traffic at the start of the event, but this is 
+In figure \ref{fig:Sc-graph}, the overall traffic flow is displayed. The traffic flow is consistanse for all the captured events, and the large spike of traffic is the session between the vacuum cleaner and S3.amasoneaws.com. There is also a increase in generated traffic at the start of the event, but this is 
 deafened by the large upload traffic after finished cleaning.
 \begin{figure}[H]
     \centering
@@ -452,8 +337,8 @@ deafened by the large upload traffic after finished cleaning.
     \label{fig:Sc-graph}
 \end{figure}
 
-\subsubsection{Protocol identification}
-In scheduled cleaning there is an average protocol distribution according to \ref{tab:scanalysisdist}, this is after the base filter created in data processing is applied. The two UDP packages is DNS response for FQDN:
+\subsubsection{Protocol Identification}
+In scheduled cleaning there is an average protocol distribution according to table \ref{tab:scanalysisdist}, this is after the base filter is applied. The two UDP packages is DNS response for FQDN:
 
 \begin{itemize}
     \item 0550315.ingest.sentry.io
@@ -474,8 +359,8 @@ TCP                         & 99,8                \\ \hline
 
 After the cleaning is done, there is two new sessions established. First a session to \textit{0550315.ingest.sentry.io} where the vacuum cleaner is transferring some data. When this session is closed it opens a session to \textit{s3.amazoneaws.com}, where there is sent large amounts of traffic, before the session is closed. Both sessions are established and teared down within a minute after the cleaning is done. This is most likely two different update services where \textit{s3.amazoneaws.com} is where sensed information is uploaded and processed after clenaing.
  
-\subsubsection{Traffic sequence}
-In the sequence identification we will use the same method as the researchers in \cite{pingpong}. All traffic has the smart home wan address as source or destination due to the infrastructure design. We extract the first 20 bytes of the packet sequence to try to identify a common sequence for all Scheduled cleaning events. Only the first bytes are examined because that is where the event is triggered. In \ref{tab:sclengthseq}, the 20 first bytes of each event is presented. The horizontal values are packet packet lengths, where notation 's' and 'd' notations are WAN address source and destination.  
+\subsubsection{Traffic Sequence}
+All traffic has the smart home wan address as source or destination due to the infrastructure design. We extract the first 20  packets in the traffic flow, to try to identify a common sequence for all Scheduled cleaning events. Only the first packets are examined because that is where the event is triggered. In table \ref{tab:sclengthseq}, the packet length of the 20 first packets is presented. The horizontal values are packet lengths, where notation 's' and 'd' notations are WAN address source and destination.  
 For this event we can see that the traffic generated by the vacuum cleaner is following a pattern: 
 \\
 \textit{[176, 173, 179, 443, 177]}, + - 15 bytes on all values 
@@ -525,8 +410,6 @@ Event 10 & S 175   & S 466 & D 1094 & S 179 & S 442 & D 1102 & S 179 & S 448 \\ 
 \end{table}
 
 \subsubsection{Signeture}
-The signature for scheduled cleaning event is the present of DNS request for, \textit{0550315.ingest.sentry.io} and \textit{0550315.ingest.sentry.io} and traffic sequence \textit{[176, 173, 179, 443, 177]} or \textit{[176, 443, 179, 443, 177]}.
-
 The identified signature for Schedule cleaning includes the present of two DNS responses and one of the given sequences.  
 
 \begin{itemize}
@@ -542,8 +425,8 @@ The identified signature for Schedule cleaning includes the present of two DNS r
 
 
 
-\subsection{Data analysis for Automated cleaning}
-The overall characteristics for this event is shown in \ref{tab:scoverall} and \ref{tab:scoverallDRA}. As presented the average and the standard deviation within the different environments is small. This supports the hypothesis that is is sufficient with 20 captured events to perform further analysis. Event 6 in Drammen is off the other captures. During analysis all identifications for a cleaning event was present, but the upload to the could service was limited. This could be to some disruption in the transaction or the lack of updates for the vacuum cleaner. 
+\subsection{Data Analysis for Automated Cleaning}
+The overall characteristics for this event is shown in table \ref{tab:scoverall} and \ref{tab:scoverallDRA}. As presented the average and the standard deviation within the different environments is small. This supports the hypothesis that is is sufficient with 20 captured events to perform further analysis. Event 6 in Drammen has a small amount of traffic compared to the other captures. During analysis all identifications for a cleaning event was present, but the upload to the could service was limited. This could be to some disruption in the transaction or the lack of updates for the vacuum cleaner. 
 
 \begin{table}[H]
 \centering
@@ -587,7 +470,7 @@ Average        & 1179.8                 & 1604807.2                 \\ \hline
 \end{tabular}
 \end{table}
 
-In \ref{fig:Ac-graph}, the overall traffic flow is displayed. The traffic flow is consistence for all the captured events, and the large spike of traffic is the session between the vacuum cleaner and S3.amasoneaws.com. There is also a increase in generated traffic at the start of the event, but this is 
+In figure \ref{fig:Ac-graph}, the overall traffic flow is displayed. The traffic flow is consistence for all the captured events, and the large spike of traffic is the session between the vacuum cleaner and S3.amasoneaws.com. There is also a increase in generated traffic at the start of the event, but this is 
 deafened by the large upload traffic after finished cleaning.
 
 \begin{figure}[H]
@@ -598,7 +481,7 @@ deafened by the large upload traffic after finished cleaning.
 \end{figure}
 
 \subsubsection{Protocol Identification}
-In Automated cleaning there is an average protocol distribution according to \ref{tab:acanalysisdist}. All the udp traffic is DNS request, one to each of these FQDNs:
+In Automated cleaning there is an average protocol distribution according to table\ref{tab:acanalysisdist}. All the udp traffic is DNS requests, one to each of these FQDNs:
 
 \begin{itemize}
     \item 0550315.ingest.sentry.io
@@ -620,7 +503,7 @@ TCP                         & 99,9                \\ \hline
 After the cleaning is done, there is two new sessions established. First a session to \textit{0550315.ingest.sentry.io} where the vacuum cleaner is transferring some data. When this session is closed it opens a session to \textit{s3.amazoneaws.com}, where there is sent large amounts of traffic, before the session is closed. Both sessions are established and teared down within a minute after the cleaning is done. This is most likely two different update services where \textit{s3.amazoneaws.com} is where sensed information is uploaded and processed after cleaning.
 
 \subsubsection{Traffic Sequence}
-The method in \cite{pingpong} is used manually on the first 20 packet lengths of the event. Inn all 20 events there is a common traffic sequence initiated from the could service, this is \textit{[316, 289]}. these packet lengths dose not occur in the same order, but is received together as a pair. So both \textit{[316, 289]} and \textit{[289, 315]} are valid. The actual packet length also varies with +- 1 byte. 
+In all 20 events there is a common traffic sequence initiated from the could service, this is the packet length pair\textit{[316, 289]}. These packet lengths dose not occur in the same order, but is received together as a pair. So both \textit{[316, 289]} and \textit{[289, 315]} are valid. The actual packet length also varies with +- 1 byte. 
 The following sequence is a response from the vacuum cleaner with packet lengths of \textit{[176, 187]}. Followed by a response from the cloud server with packet length 408 or 409. The identified sequence is therefore: \textit{[316, 289, 176, 187, 409]} or \textit{[289, 316, 176, 187, 409]} +- 1 byte.
 
 \begin{table}[H]
@@ -674,7 +557,7 @@ The identified signature for Automated cleaning includes the present of two DNS 
 
 
 \subsection{Data Analysis for Application Triggered Cleaning}
-The overall characteristics for this event is shown in \ref{tab:TCoverallOSL} and \ref{tab:TCoverallDRA}. As presented the average and the standard deviation within the different environments is small. This supports the hypothesis that is is sufficient with 20 captured events to perform further analysis.
+The overall characteristics for this event is presented in table \ref{tab:TCoverallOSL} and \ref{tab:TCoverallDRA}. As presented the average and the standard deviation within the different environments is small. This supports the hypothesis that is is sufficient with 20 captured events to perform further analysis.
 
 \begin{table}[H]
 \centering
@@ -718,7 +601,7 @@ Average        & 842.9                  & 1107539.1                 \\ \hline
 \end{tabular}
 \end{table}
 
-In \ref{fig:Tc-graph}, the overall traffic flow is displayed. The traffic flow is consistence for all the captured events, and the large spike of traffic is the session between the vacuum cleaner and S3.amasoneaws.com. There is also a increase in generated traffic at the start of the event, but this is 
+In figure \ref{fig:Tc-graph}, the overall traffic flow is displayed. The traffic flow is consistence for all the captured events, and the large spike of traffic is the session between the vacuum cleaner and S3.amasoneaws.com. There is also a increase in generated traffic at the start of the event, but this is 
 deafened by the large upload traffic after finished cleaning.
 
 \begin{figure}[H]
@@ -730,17 +613,25 @@ deafened by the large upload traffic after finished cleaning.
 
 \subsubsection{Protocol Identification}
 In Automated cleaning there is an average protocol distribution according to \ref{tab:tcanalysisdist}. All the udp traffic is DNS request, one to each of these FQDNs:
-\\
-figure
-\\
+
+\begin{table}[H]
+\centering
+\caption{Protocol Statistics Application Triggered Cleaning}
+\label{tab:tcanalysisdist}
+\begin{tabular}{|c|c|}
+\hline
+\textbf{Transport protocol} & \textbf{Percentage} \\ \hline
+UDP                         & 0,1                 \\ \hline
+TCP                         & 99,9                \\ \hline
+\end{tabular}
+\end{table}
 
 
 
 After the cleaning is done, there is two new sessions established. First a session to \textit{0550315.ingest.sentry.io} where the vacuum cleaner is transferring some data. When this session is closed it opens a session to \textit{s3.amazoneaws.com}, where there is sent large amounts of traffic, before the session is closed. Both sessions are established and teared down within a minute after the cleaning is done. This is most likely two different update services where \textit{s3.amazoneaws.com} is where sensed information is uploaded and processed after cleaning.
 
 \subsubsection{Traffic sequence}
-The method in [pingpong] is used manually on the first 20 packet lengths of the
-event.All events has a common sequence initiated from the cloud service, \textit{[209, 289, 316]} where the two last packets can be in mixed order. The vacuum cleaner then responds with two packets with length \textit{176, 187}, before the could service responds with a package with length \textit{409 or 408}. The entire packet sequence is then \textit{[316, 289, 176, 187, 409] or [289, 316, 176, 187, 409]
+All events has a common sequence initiated from the cloud service, \textit{[209, 289, 316]} where the two last packets can be in mixed order. The vacuum cleaner then responds with two packets with length \textit{176, 187}, before the could service responds with a package with length \textit{409 or 408}. The entire packet sequence is then \textit{[316, 289, 176, 187, 409] or [289, 316, 176, 187, 409]
 }
 
 \begin{table}[H]
@@ -784,27 +675,15 @@ Event 10 & D 208 & D 315 & D 288 & S 176 & S 186  & D 408 & S 176 & S 1514 \\ \h
 \subsubsection{Signature}
 The identified signature for Application triggered cleaning includes the present of two DNS
 responses and one of the given sequences.
-• 0550315.ingest.sentry.io
-• s3.amazoneaws.com
-• [209, 316, 289, 176, 187, 409] +- 1
-• [209, 289, 316, 176, 187, 409] +- 1
-
-
-
-
-
-%new event
-
-
-
-
-
-
-
-
+\begin{itemize}
+    \item 0550315.ingest.sentry.io
+    \item s3.amazoneaws.com
+    \item [209, 316, 289, 176, 187, 409] +- 1
+    \item [209, 289, 316, 176, 187, 409] +- 1
+\end{itemize}
 
 \subsection{Data Analysis for Physical triggered cleaning}
-
+The overall characteristics for this event is shown in table \ref{tab:PCoverallOSL} and \ref{tab:PCoverallDRA}. As presented the average and the standard deviation within the different environments is small. This supports the hypothesis that it is sufficient with 20 captured events to perform further analysis.
 \begin{table}[H]
 \centering
 \caption{Physical triggered cleaning, overall statistics Oslo}
@@ -847,7 +726,8 @@ Average        & 1101.9                 & 1505865.6                 \\ \hline
 \end{tabular}
 \end{table}
 
-In \ref{fig:Pc-graph}, the overall traffic flow is displayed. the large spike of traffic is the session between the vacuum cleaner and S3.amasoneaws.com.
+In figure \ref{fig:Pc-graph}, the overall traffic flow is displayed. The traffic flow is consistence for all the captured events, and the large spike of traffic is the session between the vacuum cleaner and S3.amasoneaws.com. There is also a increase in generated traffic at the start of the event, but this is 
+deafened by the large upload traffic after finished cleaning.
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{figures/PC-graph.png}
@@ -856,8 +736,30 @@ In \ref{fig:Pc-graph}, the overall traffic flow is displayed. the large spike of
 \end{figure}
 
 \subsubsection{Protocol Identification}
+In Automated cleaning there is an average protocol distribution according to \ref{tab:pcanalysisdist}. All the udp traffic is DNS request, one to each of these FQDNs
+
+\begin{table}[H]
+\centering
+\caption{Protocol Statistics Physical triggered cleaning}
+\label{tab:pcanalysisdist}
+\begin{tabular}{|c|c|}
+\hline
+\textbf{Transport protocol} & \textbf{Percentage} \\ \hline
+UDP                         & 0,1                 \\ \hline
+TCP                         & 99,9                \\ \hline
+\end{tabular}
+\end{table}
+
+After the cleaning is done, there is two new sessions established. First a session to \textit{0550315.ingest.sentry.io} where the vacuum cleaner is transferring some data. When this session is closed it opens a session to \textit{s3.amazoneaws.com}, where there is sent large amounts of traffic, before the session is closed. Both sessions are established and teared down within a minute after the cleaning is done. This is most likely two different update services where \textit{s3.amazoneaws.com} is where sensed information is uploaded and processed after cleaning.
 
 \subsubsection{Traffic sequence}
+ Packet lengths for the first 20 packets are presented in table \ref{tab:PCSequenceOslo} and \ref{tab:PCSequenceDrammen}. There is no initial traffic sequence to idenify in this event, but there is a reoccurring pattern where the vacuum cleaner sends packets with the length of \textit{[176, 173, 179, 443, 177]} or \textit{[176, 443, 179, 443, 177]}. This traffic flow is continuing throughout the duration of the cleaning. The identified sequence is listed below
+\begin{itemize}
+    \item \textit{[176, 173, 179, 443, 177]}, + - 15 bytes on all values 
+    \item \textit{[176, 443, 179, 443, 177]} + - 5 bytes in all values
+\end{itemize}
+
+The reason for adding + or - 15 and 5 is because the actual value is varies with the deviation of 15 and 5.
 
 \begin{table}[H]
 \centering
@@ -898,9 +800,17 @@ Event 10 & S 179 & S 440 & D 1100 & S 179 & S 446 & D 1106 & S 175 & S 338 \\ \h
 \end{table}
 
 \subsubsection{Signature}
+The identified signature for Schedule cleaning includes the present of two DNS responses and one of the given sequences.  
 
+\begin{itemize}
+    \item \textit{0550315.ingest.sentry.io}
+    \item \textit{s3.amazoneaws.com}
+    \item \textit{[176, 173, 179, 443, 177]} +- 15
+    \item \textit{[176, 443, 179, 443, 177]} +- 5
+\end{itemize}
 
 \subsection{Data Analysis for Application Start}
+The captures including Application start event has a small amount of network traffic. The deviation is therefore large, but the difference in in how long the application was open and actions and changes made, could cause this variation. In Drammen, event 5 to 10 was used to change the time for a scheduled cleaning event. This can be identified in table \ref{tab:TestMatrixEnv2}, as more traffic is generated. The same procedure should have been followed to create more stable results. This research will therefor only focus on the initial traffic flow.
 
 \begin{table}[H]
 \centering
@@ -945,8 +855,9 @@ Average        & 24,5                   & 16821.9                   \\ \hline
 \end{table}
 
 \subsubsection{Protocol Identification}
-
+During an application start there is only tcp packages sent between the vacuum cleaner and the cloud service. This is traffic towards the Irobot cloud server which holds the tcp keep-alive connection. 
 \subsubsection{Traffic sequence}
+All events has a common sequence initiated from the cloud service, \textit{[209, 289, 316]} where the two last packets can be in mixed order. The vacuum cleaner then responds with two packets with length \textit{176, 187}, before the could service responds with a package with length \textit{409 or 408}. The entire packet sequence is then \textit{[316, 289, 176, 187, 409] or [289, 316, 176, 187, 409]}. This is identified in figure \ref{tab:ASSequenceOslo} and \ref{tab:ASSequenceDrammen}.
 
 \begin{table}[H]
 \centering
@@ -987,9 +898,15 @@ Event 10 & D 208 & D 289 & D 316 & S 176 & S 187  & D 409 & S 176  & S 1389 \\ \
 \end{table}
 
 \subsubsection{Signature}
+The identified signature for Application start includes one of the given sequences.
+\begin{itemize}
+    \item [209, 316, 289, 176, 187, 409] +- 1
+    \item [209, 289, 316, 176, 187, 409] +- 1
+\end{itemize}
 
 
 \subsection{Data Analysis for Bin Remove}
+For the Bin remove event there is some deviations in traffic amount. Observations during the event triggering was, that sometimes the vacuum cleaner made a sound, sometimes it started flashing. This is probably because it lost connection with one of the charging contacts. This causes the event to be non standard and loose validity. The event will throughout this research be Bin remove, but it can be discussed if the event should be renamed Robot physical touch. 
 
 \begin{table}[H]
 \centering
@@ -1035,9 +952,9 @@ Average        & 13,8                   & 6080.5                    \\ \hline
 \end{table}
 
 \subsubsection{Protocol Identification}
-
+During the event it is only captured TCP packages, since the number of packages is limited and the traffic is end-to-end encrypted with TLS there is not much information to extract. 
 \subsubsection{Traffic sequence}
-
+The traffic sequence has to distinct packet lengths which is not identified in any og the previous events. This is \textit{410 and 411}, these packets are always received after the vacuum cleaner has sent two packets with the length of \textit{[179, 186]}. The distinct pattern is therefore \textit{[179, 187, 410]}
 \begin{table}[H]
 \centering
 \caption{Bin removal, length sequence Oslo}
@@ -1076,8 +993,143 @@ Event 9  & S   448 & D 1108 & S 179  & S 448 & D 1108 & S 179 & S 186 & D 410 \\
 Event 10 & S   187 & D 411  & S 179  & S 448 & D 1108 & S 179 & S 186 & D 410 \\ \hline
 \end{tabular}
 \end{table}
+
 \subsubsection{Signature}
+The siganture for Bin removal event is therefor the identification of this sequence
+\begin{itemize}
+    \item \textit{[179, 187, 410]}
+\end{itemize}
+
+
+\subsection{WLAN and LAN analysis}
+Both WLAN and LAN traffic was captured for all events triggered in this research. Due to time limitations this research only created detection mechanisms for the LAN traffic. More information could be extracted using LAN traffic, since all WLAN traffic was encrypted at the wi-fi header. This exclude information such as DNS. 
+To determine if the same method can be applied to the WLAN traffic, the two captures are compared. In this analysis it is identified that there is a lower number of packets in the WLAN, this could be due to different segmentation or re-transmission. It could also be due to other broadcast and multi cast processes on wifi or dual channel communication.   Regardless of this it is possible to identify that the added WLAN header is 79 bytes. This is shown in \ref{fig:WLANLANHeader}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.9\textwidth}
+        \includegraphics[width=\textwidth]{figures/WLANLANComparison.png}
+        \caption{WLAN}
+    \end{subfigure}
+    \quad
+    \begin{subfigure}[b]{0.9\textwidth}
+        \includegraphics[width=\textwidth]{figures/LANWLANcomparison.png}
+        \caption{LAN}
+    \end{subfigure}
+    
+    \caption{WLAN and LAN comparison}
+    \label{fig:WLANLANHeader}
+\end{figure}
+
+
+Due to this we can assume that some of the same sequences can be found in WLAN capturing as they do in LAN capturing, but more work has to be done to identify and evaluate the differences in traffic flow. An advantage with WLAN capture is that captured traffic has a Irobot MAC address, so it is easier to identify the interesting traffic without any DNS and IP changes. 
+
+
 
 
 \subsection{Signature comparison}
-All cleaning events has the same DNS signature
+In this subsection we will compare the different signatures identified in the different event. 
+
+All the different cleaning events had the same DNS responses present in the packet capturing. First a DNS response for \textit{0550315.ingest.sentry.io} and then \textit{0550315.ingest.sentry.io}. These dns packets can therefore not be used as signature for any of the specific cleaning events, but included as a confident test to identify that a cleaning is executed. There is several similarities between the identified sequences and this will be discussed further.
+
+\paragraph{Scheduled Compared to Physical Triggered Cleaning}, both events had the identified sequences of: 
+\begin{itemize}
+    \item \textit{[176, 173, 179, 443, 177]} +- 15
+    \item \textit{[176, 443, 179, 443, 177]} +- 5
+\end{itemize}
+These sequences can therefore not differentiate the events. However the traffic sequence on all the scheduled cleaning events is started within a minute before the scheduled cleaning time. It is safe to assume that scheduled cleaning is configured every hole hour or half hour. A normal user would probably not configure a cleaning at 15:17, but at 15:00. Time stamps for first packets is shown in \ref{tab:timestampSCPC}. If an attacker is monitoring a smart home over a longer period of time, the scheduled cleaning event can also be attributed if the cleaning event is triggered on the same time, each day or each week. For example, if the attacker can observe a cleaning event every Friday at 07:59, it is safe to assume that this is a scheduled cleaning and not a physical triggered cleaning.
+
+
+
+\begin{table}[H]
+\centering
+\caption{Start timestamp Scheduled cleaning}
+\label{tab:timestampSCPC}
+\begin{tabular}{|l|l|l|l|l|l|l|l|l|}
+\hline
+
+\end{tabular}
+\end{table}
+
+The timestamps of the physical triggered cleaning is not presentable for a real smart home environment. These events are triggered at scheduled times and not random as we can assume it will in a live smart home environment. 
+
+\paragraph{Application start and Application triggered cleaning}
+both event had the same identified sequence
+\begin{itemize}
+    \item \textit{[209, 316, 289, 176, 187, 409] +- 1}
+    \item \textit{[209, 289, 316, 176, 187, 409] +- 1}
+\end{itemize}
+We can assume that this sequence is due to the fact that the application is started, and not the actual triggering of the cleaning event. It is still possible to differentiate between these two events with the use of Application triggered cleaning's DNS signature. As all other cleaning events it includes \textit{0550315.ingest.sentry.io} and then \textit{s3.amazoneaws.com}. If the application start sequences and the cleaning DNS responses is detected we can assume that a application triggered cleaning is executed. An element of uncertainty occurs if the user opens the application before or during another cleaning event, then this could create a false positive. 
+
+\paragraph{Automated cleaning compared to Application triggered cleaning}
+The only difference between these two events is the first package in Application start sequence. This packet has the length of 209 bytes and occurs 100 \% of the times the application is started. The identification of this is therefor a good attribute to differentiate for these events.
+
+\section{Detection rules}
+In this section all the different detection signatures will be presented. Based on the comparison, it has been some change from the once identified. Each detection will be presented with sudo code, where the actual code is presented in Appendix. 
+
+\paragraph{Application start detection} will be used for both Application start and Application triggered cleaning detection. Sudo code is presented below.
+
+\begin{lstlisting}
+# Python code, Application start detection
+1. function detect_application_start(packet_lengths)
+2.      signature1 = [209,289,316]
+3.      signature2 = [209.316.289]
+4.      if signature1 in packet_lengths
+5.           application_start_confidence = + 10
+6.      elsif signature1 in packet_lengths
+7.          application_start_confidence = + 10
+8.      return application_start_confidence
+\end{lstlisting}
+
+\paragraph{Cleaning detection} is done as a attribute to be used to add confidence to a cleaning event. 
+\begin{lstlisting}
+# Python code, Celaning event detection
+1. function cleaning_event_detection(event_capture)
+2.      if 'o550315.ingest.sentry.io' in event_capture
+3.           dns1 == True
+4.      elsif
+5.           dns1 == False
+6.      if 's3.amazonaws.com' in event_capture
+7.           dns2 == True
+8.      elsif
+9.           dns2 == False
+10.     if dns1 and dns2 == True      
+11.          cleaning_confidece = + 10
+12.     return cleaning_confident
+\end{lstlisting}
+
+\paragraph{Application triggered cleaning} is detected with a combination of Application start and cleaning detection.
+\begin{lstlisting}
+# Python code, Application start detection
+1. function application_triggered_cleaning(cleaning_confident, application_start_confident)
+2.      if cleaning_confident and application_start_confident > 0
+3.          application_triggered_cleaning_confident = + 10
+4.      return application_triggered_cleaning_confident
+\end{lstlisting}
+
+\paragraph{Scheduled cleaning and Physical triggered cleaning}, time detection has not been implemented due to time limitations, but the sudo code for the detection based on the sequence is presented in the analysis. 
+\begin{lstlisting}
+# Python code, Application start detection
+1. function detect_application_start(packet_lengths_src)
+2.      signature1 = [176,173,179,443,177]
+3.      signature2 = = [176,443,179,443,177]
+4.      if signature1 in packet_lengths
+5.           SC_PTC_confident = + 10
+6.      elsif signature1 in packet_lengths
+7.           SC_PTC_confident = + 10
+8.      return SC_PTC_confident
+\end{lstlisting}
+
+\paragraph{Automated cleaning}, is identified as with the sequence identified in the analysis. 
+\begin{lstlisting}
+# Python code, Application start detection
+1. function detect_application_start(packet_lengths_src)
+2.      signature1 = [316, 289, 176, 187, 409]
+3.      signature2 = [289, 316, 176, 187, 409]
+4.      if signature1 in packet_lengths
+5.           automanted_cleaning_confident = + 10
+6.      elsif signature1 in packet_lengths
+7.           automated_cleaning_confident = + 10
+8.      return automated_cleaning_confident
+\end{lstlisting}
+
