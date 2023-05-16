@@ -1,0 +1,300 @@
+\chapter{Detection Algorithm}
+\label{app:DetectionAlgorithm}
+
+\begin{lstlisting}[numbers=left]
+# Python code, Signeture detection
+import pyshark
+from pyshark.packet import consts
+from pyshark.packet.common import Pickleable
+import matplotlib
+import numpy
+import os
+
+
+def cleaning_conf(c_conf):
+    
+    dns_o_i_s_i = False
+    dns_aws = False
+    clean_end = None
+    
+    #Loop all packets in capture
+    for packet in cap:
+
+        #find DNS response lager then 100 bytes 
+        if packet.highest_layer == 'DNS' and packet.ip.dst_host == wan_addr:
+            #print('dns')
+            #find cleaning dns response
+            if packet.dns.resp_name == 'o550315.ingest.sentry.io':
+                dns_o_i_s_i = True
+                #print('dns1')
+            if packet.dns.resp_name == 's3.amazonaws.com':
+                dns_aws = True
+                #print('dns2')
+    
+        if dns_o_i_s_i and dns_aws == True:
+            c_conf =+ 10
+            return c_conf
+
+    return c_conf
+
+def get_type_of_cleaning():
+    indication_sc = 0
+    indication_tc = 0
+    cleaning_type = None
+    clean_start = None
+
+    #Loop through all packets in capture
+    for packet in cap:
+        #Add indication for sc
+        if  packet.ip.dst_host == '192.168.0.56' and packet.length == ('1101' or '1107'):
+            indication_sc = indication_sc + 1
+            
+        #Add indication for tc
+        if packet.ip.dst_host == '192.168.0.56' and packet.length == ('1105' or '1106' or '1099'):
+            indication_tc = indication_tc + 1
+
+    if indication_sc > indication_tc:
+        cleaning_type = 'scheduled cleaning'
+    if indication_sc < indication_tc:
+        cleaning_type = 'triggered cleaning'
+    
+
+    return cleaning_type
+
+def open_application_conf(oa_conf):
+    #open application True/False
+    open_application = False
+    ao_time = 'Opening time not identified'
+    oa_initiator = [209, 289, 316]
+    oa_initiator_1 = [209, 315, 289]
+    for packet in cap:
+        if packet.length == '209':
+            ao_time = packet.sniff_time
+            #print(ao_time)
+    
+        if 209 in packet_length[0:20]:
+            oa_index = packet_length_dst.index(209)
+            oa_start_compare = packet_length_dst[oa_index:oa_index + len(oa_initiator)]
+            open_application = numpy.allclose(oa_initiator, oa_start_compare, atol= 3)
+            open_application_1 = numpy.allclose(oa_initiator_1, oa_start_compare, atol= 3)
+            if (open_application or open_application_1) == True:
+                oa_conf =+ 10
+                return oa_conf
+
+        if 208 in packet_length[0:20]:
+            oa_index = packet_length_dst.index(208)
+            oa_start_compare = packet_length_dst[oa_index:oa_index + len(oa_initiator)]
+            open_application = numpy.allclose(oa_initiator, oa_start_compare, atol= 3)
+            open_application_1 = numpy.allclose(oa_initiator_1, oa_start_compare, atol= 3)
+            if (open_application or open_application_1) == True:
+                oa_conf =+ 10
+                return oa_conf
+
+        if 207 in packet_length[0:20]:
+            oa_index = packet_length_dst.index(207)
+            oa_start_compare = packet_length_dst[oa_index:oa_index + len(oa_initiator)]
+            open_application = numpy.allclose(oa_initiator, oa_start_compare, atol= 3)
+            open_application_1 = numpy.allclose(oa_initiator_1, oa_start_compare, atol= 3)
+            if (open_application or open_application_1) == True:
+                oa_conf =+ 10
+                return oa_conf
+
+    
+    
+    return oa_conf
+
+def find_packet_seq(tc_confident):
+    triggered_cleaning = [503, 175, 509, 1106, 179, 439, 1099, 179, 445, 1105, 176]
+    scheduled_cleaning = [179, 447, 1107, 176, 476, 176, 617, 179, 253, 626, 179, 447, 1107]
+    oopen_application = [209, 289, 316, 176, 187, 409]
+    bin_entered = [179, 186, 410]
+    auto_clean = [316, 289, 176, 187, 409]
+    
+    if 503 in packet_length:
+        tc_index = packet_length.index(503)
+        tc_compare = packet_length[tc_index:tc_index + len(triggered_cleaning) ]
+        tc_test = numpy.allclose(triggered_cleaning, tc_compare, atol= 1)
+
+        if tc_test == True:
+            tc_confident = tc_confident + 10
+
+    return tc_confident
+
+def auto_clean_conf(ac_conf, packet_length):
+    auto_clean = [316, 289, 176, 187, 409]
+    auto_clean_1 = [289, 316, 176, 187, 409]
+
+    if 207 in packet_length[0:30]:
+        return ac_conf
+    if 208 in packet_length[0:30]:
+        return ac_conf
+    if 209 in packet_length[0:30]:
+        return ac_conf
+
+
+    if 316 in packet_length:
+        ac_index = packet_length.index(316)
+        ac_start_compare = packet_length[ac_index:ac_index + len(auto_clean)]
+        ac_indication = numpy.allclose(auto_clean, ac_start_compare, atol= 1)
+        if ac_indication == True:
+            ac_conf =+ 10
+            return ac_conf
+    
+    if 315 in packet_length:
+        ac_index = packet_length.index(315)
+        ac_start_compare = packet_length[ac_index:ac_index + len(auto_clean)]
+        ac_indication = numpy.allclose(auto_clean, ac_start_compare, atol= 1)
+        if ac_indication == True:
+            ac_conf =+ 11
+            return ac_conf
+
+    if 288 in packet_length:
+        ac_index = packet_length.index(288)
+        ac_start_compare = packet_length[ac_index:ac_index + len(auto_clean_1)]
+        ac_indication = numpy.allclose(auto_clean_1, ac_start_compare, atol= 1)
+        if ac_indication == True:
+            ac_conf =+ 12
+            return ac_conf
+        
+    if 289 in packet_length:
+        ac_index = packet_length.index(289)
+        ac_start_compare = packet_length[ac_index:ac_index + len(auto_clean_1)]
+        ac_indication = numpy.allclose(auto_clean_1, ac_start_compare, atol= 1)
+        if ac_indication == True:
+            ac_conf =+ 13
+            return ac_conf
+            
+    return ac_conf   
+
+def trigger_clean_conf(tc_conf, oa_conf, c_conf):
+    
+    #If there is a cleaning and tha application is opened, we can say that it is likely that is has been a triggered clean
+    if oa_conf and c_conf == 10:
+        tc_conf =+ 10
+
+
+    return tc_conf
+
+def physical_cleaning_conf(pc_conf, packet_length_src):
+    physical_clean = [176, 173, 179, 443, 177]
+    physical_clean_1 = [176, 443, 179, 443, 177]
+    count = 0
+    #The value can be 172, 176, 175 and 179
+    for packet in packet_length_src:
+        
+        if 172 <= packet <= 179:
+          pc_compare = packet_length_src[count:count + len(physical_clean)]
+          pc_indicator = numpy.allclose(physical_clean, pc_compare, atol= 15)
+          pc_indicator_1 = numpy.allclose(physical_clean_1, pc_compare, atol= 5)
+
+          if pc_indicator == True:
+              pc_conf =+ 10
+              return pc_conf
+          
+          if pc_indicator_1 == True:
+              pc_conf =+ 11
+              return pc_conf
+        
+        count = count + 1
+    
+
+    return pc_conf
+
+def remove_bin(br_conf):
+
+    removebin_value = '410'
+    for packet in cap:
+        if packet.length ==  '410':
+            return 10
+        if packet.length == "411":
+            return 10
+    return 0
+
+def dns_cleaning(c_conf, dns_names):
+    
+    if 'o550315.ingest.sentry.io' and 's3.amazonaws.com' in dns_names:
+        return 10
+    else:
+        return 0
+
+# MAIN Function is starts
+
+
+folder = [r'C:\Users\benja\Documents\Mater test results\LAN\Live\Env3_dns']
+files = os.listdir(folder[0])
+#print(folder[0] + '\\' + files[0])
+wan_addr = '192.168.0.56'
+
+for file in files:
+    ac_conf = 0
+    oa_conf = 0
+    sc_conf = 0
+    tc_conf = 0
+    rb_conf = 0
+    pc_conf = 0
+    c_conf = 0
+    
+
+    file_path = str(folder[0] + '\\' + file)
+    cap = pyshark.FileCapture(file_path)
+    cap.load_packets()
+    packet_length = [2000]
+    packet_length_dst = [2000]
+    packet_length_src = [2000]
+    packet_time = []
+    dns_names = []
+    
+
+
+    for packet in cap:
+        if packet.highest_layer != 'DNS':
+
+            if int(packet.length) != packet_length[-1]:
+                packet_length.append(int(packet.length))
+                #packet_time.append(int(packet.sniff_time))
+
+                if packet.ip.dst_host == wan_addr:
+                    packet_length_dst.append(int(packet.length))
+
+                if packet.ip.src_host == wan_addr:
+                    packet_length_src.append(int(packet.length))
+        else:
+            dns_names.append(packet.dns.resp_name)
+    
+
+                
+
+    print(file)
+    #print(packet_length_dst)
+    ac_conf =+ auto_clean_conf(ac_conf, packet_length)
+    oa_conf =+ open_application_conf(oa_conf)
+    #c_conf =+ cleaning_conf(c_conf)
+    c_conf =+ dns_cleaning(c_conf, dns_names)
+    tc_conf =+ trigger_clean_conf(tc_conf, oa_conf, c_conf)
+    #pc_conf =+ physical_cleaning_conf(pc_conf, packet_length_src)
+    rb_conf =+ remove_bin(rb_conf)
+    #print(packet_length_dst[0:20])
+    #print(dns_names)
+
+    #print("Auto clean  " + str(ac_conf) + '  Open application  '+ str(oa_conf) + '   Cleaning  ' + str(c_conf) + '  triggered  ' + str(tc_conf) + '  Pysical  ' + str(pc_conf))
+    if ac_conf > 0:
+        print('Auto Clean')
+    if tc_conf > 0:
+        print('Triggered Cleaning')
+    if c_conf > 0 and ac_conf == 0 and tc_conf == 0:
+        print('Scheduled or Physical cleaning')
+    if rb_conf > 0:
+        print('Bin is removed')
+    if oa_conf > 0 and tc_conf == 0:
+        print('application is opened')
+
+    
+    
+
+
+    
+
+
+
+
+\end{lstlisting}

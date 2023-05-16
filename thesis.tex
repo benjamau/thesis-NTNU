@@ -1,5 +1,8 @@
 \documentclass[british,titlepage]{ntnuthesis}
+\raggedbottom
 \usepackage{graphicx}
+\usepackage{appendix}
+\usepackage{lipsum}
 \usepackage{array}
 \usepackage{biblatex}
 \usepackage{subcaption}
@@ -8,8 +11,9 @@
 \usepackage{listings}
 \usepackage{xcolor}
 \usepackage{multirow}
+
 \lstset{language=Python,
-    basicstyle=\ttfamily,
+    basicstyle=\small\ttfamily,
     keywordstyle=\color{blue}\ttfamily,
     stringstyle=\color{red}\ttfamily,
     commentstyle=\color{green}\ttfamily,
@@ -20,10 +24,9 @@
 }
 
 
-\title{Sensitive Information Exposed By The Use Of Robot Vacuum Cleaners In Smart Homes }
-\shorttitle{Sensitive Information Exposed By The Use Of Robot Vacuum Cleaners In Smart Homes}
-\author{Benjamin Andreas Ulsmåg}
-\shortauthor{Benjamin A. U.}
+\title{Private Information Exposed By The Use Of Robot Vacuum Cleaners In Smart Environments}
+\shorttitle{Private Information Exposed By The Use Of RVC In Smart Environments}
+\author{B. Ulsmåg}
 \date{CC-BY \ntnuthesisdate}
 
 \addbibresource{thesis.bib}
@@ -41,7 +44,6 @@
 \tableofcontents
 \listoffigures
 \listoftables
-\lstlistoflistings
 
 \printglossary[type=\acronymtype] % Print acronyms
 \printglossary                    % Print glossary
@@ -60,7 +62,9 @@
 
 %\input{chapters/papers.tex}
 
-%\appendix
-%\input{appendices/a-appendix.tex}
+\appendix
+\appendixpage
+\input{appendices/a-Detection algorithm}
 
 \end{document}
+
