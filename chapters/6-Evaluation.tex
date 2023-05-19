@@ -96,19 +96,19 @@ Evaluation base filter was adopted from Chapter \ref{cap:AnalysisandResults}, th
 
 \subsection{Evaluation Results}
 
-This subsection is presenting the data processing and rule detection results. First the event triggering sequence, followed by the DNS response IP extraction in Figure \ref{fig:Sudo_code_for_IP_extraction_from_DNS_response}, then the base filter is presented and finished by the results for event detection. 
+This subsection is presenting the data processing and rule detection results. First the event triggering sequence, followed by the DNS response IP extraction, then the base filter is presented and finished by the results for event detection. 
 
 \subsubsection{Evaluation Event Triggering Results}
-Results from the randomize event order function, is presented in Table \ref{tab:evaleventoverview}. The randomization of the event triggering order, mitigates the influence cross events. 
+Results from the randomize event order function, are presented in Table \ref{tab:evaleventoverview}. The randomization of the event triggering order, mitigates the influence cross events. 
 
 \begin{table}[H]
 \small
 \centering
-\caption{Evaluation event overview}
+\caption{Evaluation environments event triggering order}
 \label{tab:evaleventoverview}
 \begin{tabular}{|l|l|l|l|}
 \hline
-\textbf{Sequence} & \textbf{Evaluation 1}          & \textbf{Evaluation 2}          & \textbf{Evaluation 3}          \\ \hline
+\textbf{Order} & \textbf{Evaluation 1}          & \textbf{Evaluation 2}          & \textbf{Evaluation 3}          \\ \hline
 \textbf{1}        & Automated clean                & Application start              & Remove bin                     \\ \hline
 \textbf{2}        & App triggered clean            & Scheduled cleaning             & App triggered clean            \\ \hline
 \textbf{3}        & Scheduled cleaning             & App triggered clean            & Phy triggered clean            \\ \hline
@@ -119,11 +119,10 @@ Results from the randomize event order function, is presented in Table \ref{tab:
 \end{table}
 
 \subsubsection{DNS response extraction}
-All evaluation environments capture files got processed by the DNS extraction algorithm. DNS responses for \textit{a2uowfjvhio0fa.iot.us-east-1.amazonaws.com}, was found in all three files, and are presented in Figure \ref{fig:Evaluation_DNSExtraction}
+All capture files, got processed by the DNS extraction algorithm. DNS responses for \textit{a2uowfjvhio0fa.iot.us-east-1.amazonaws.com}, were found in all of the environments. The extracted IP-addresses are shown in Figure \ref{fig:Evaluation_DNSExtraction}
 
 \begin{figure}[H]
     \centering
-    
     \begin{subfigure}{0.80\textwidth}
         \centering
         \includegraphics[width=\linewidth]{figures/Evaluation_dns_extraction 1.png}
@@ -144,14 +143,12 @@ All evaluation environments capture files got processed by the DNS extraction al
         \caption{Living room DNS extraction}
         \label{fig:Evaluation_DNSextraction_3}
     \end{subfigure}
-    
     \caption{Evaluation environment DNS extraction}
     \label{fig:Evaluation_DNSExtraction}
 \end{figure}
 
 \subsubsection{Evaluation base filter}
-All evaluation filters included the same time base filter listed below. DNS responses included several IP-addresses for the corresponding Irobot cloud service, but we only included the selected one in the base filter. The selected corresponding IP address is found in Whireshark, after the Irobot Roobma receives the DNS response it establish a TCP session to one of the IP-addresses. This process is shown in Figure \ref{fig:evaluation_corresponding_cloud}
-
+ DNS responses included several IP-addresses for the corresponding Irobot cloud service, this is used by Irobot to load balance the traffic towards their services \cite{dns_load_balancing}.The Irobot Roomba then only established a connection to one of the IP addresses. A TCP handshake towards one of the IP in the DNS response was identified right after the DNS response in Wireshark. The identification of these are presented in Figure \ref{fig:evaluation_corresponding_cloud}. This is a easy way for any attacker to identify corresponding traffic based on DNS requests. The used base filters are listed below, and are identical for all environments except the corresponding Irobot hosts. 
 
 \begin{itemize}
     \item Evaluation filter: \begin{itemize}
@@ -195,7 +192,7 @@ All evaluation filters included the same time base filter listed below. DNS resp
 \end{figure}
 
 \subsubsection{Evaluation Detection Results}
-All 18 filtered capturing files was processed by the detection algorithm presented in Appendix \ref{app:DetectionAlgorithm}. No manual analysis was done to the files before hand. Detection results are presented in Table \ref{tab:Evaluation results}. Scheduled cleaning and Physical triggered cleaning is merged to one category (Sch \& Phy) in evaluation since we could not separate these based on their signatures. 
+All 18 filtered event capturing files was processed by the detection algorithm in Appendix \ref{app:DetectionAlgorithm}. No manual analysis was done to the files before hand. Detection results are presented in Table \ref{tab:Evaluation results}. Scheduled cleaning and Physical triggered cleaning is merged to (Sch \& Phy). This because they could not be separated in Chapter \ref{cap:AnalysisandResults}.
 
 \begin{table}[H]
 \small
@@ -209,7 +206,7 @@ All 18 filtered capturing files was processed by the detection algorithm present
 \end{tabular}
 \end{table}
 
-The rules and detection algorithm was able to detect all events with 100\% accuracy, except bin remove. Cleaning detection resulted in True positive for all the cleaning event. If a cleaning event was detected, but not automated or application start was, it is categorized as either scheduled or physical triggered cleaning. To differentiate these tow events there should be implemented a time detection for the first "cleaning packet sequence". This timestamp can determine if it is most likely a scheduled or a physical clean en based on the start timestamp. 
+The rules and detection algorithm was able to detect all events with 100\% accuracy, except bin remove. Cleaning detection resulted is True positive for all the cleaning event. If a cleaning event was detected, but not automated cleaning or application start packet sequence, it was categorized as either scheduled or physical triggered cleaning. To differentiate these two events there should be implemented a time detection of the first "cleaning packet sequence". This timestamp can determine if it is most likely a scheduled or a physical triggered cleaning. 
 
 Bin remove detection gave False negative for all the bin remove events. This might be because the ejection of the bin was executed without causing the Irobot Roomba to lose connection to the charging connectors. The detection algorithm also had False positive identification of bin remove event for 66\% of the automated cleaning event. The bin remove signature is therefore not usable in detection of bin removal. 
 
@@ -217,31 +214,31 @@ Bin remove detection gave False negative for all the bin remove events. This mig
 \section{Research Question 1}
 \textbf{Which private information can be gathered from robot vacuum cleaner by carrying out a passive sniffing attack in a smart environment?}
 
-It is possible to identify the presence of an Irobot vacuum cleaner inside a smart environment based on the WLAN or LAN capture itself. In WLAN eavesdropping an attacker can lookup all  MAC addresses against open source registers, here information about the manufacturer will be available. For LAN capture the presence of DNS requests to any Irobot owned domain will place a device behind the WAN address.
+It is possible to identify the presence of an Irobot vacuum cleaner inside a smart environment based on the WLAN or LAN capture itself. In WLAN eavesdropping an attacker can lookup all  MAC addresses against open source registers. For LAN capture the presence of DNS requests to any Irobot owned domain will place a device behind the WAN address.
 
-Other Irobot Roomba i7 events can be detected in a smart environment. Automated cleaning can be triggered by the use of location services, garage openers and door locks. All these automated triggers are indications that users are leaving the area. 
+Other Irobot Roomba i7 events can be detected in a smart environment. Automated cleaning can be triggered by the use of location services, garage openers and door locks. All these automated triggers are indications that users are leaving the smart environment. 
 
 If implementations to differentiate physical triggered and scheduled cleaning are added, the detection of physical triggered cleaning will revile user activity inside the smart environment. Schedule cleaning on the other hand can give away user routines. We can assume that users usually configure scheduled cleaning when there is a high probability that there is no one at the premise. This can revile on site routines. 
 
-For application triggered cleaning and application start it is harder to identify the actual privacy exposure. The identification of these events can revile more information if observer over longer time periods, then user patterns and behaviors can identified. If the user always trigger a cleaning event when leaving for the gym, this could be identified if collected over a longer period of time. 
+For application triggered cleaning and application start it is harder to identify the actual privacy exposure. The identification of these events can revile more information if observed during longer time periods. Then user patterns and behaviors can be exposed. Users could trigger cleaning,  every time they are leaving for work or the gym.
 
-As mentioned for WLAN capturing an attacker will be able to extract private information as soon as the capturing is started. This because the filter and identification of traffic is based in MAC addresses. For LAN an attacker will have to eavesdropp WAN traffic for maximum of 24 hours before the DNS request to \textit{a2uowfjvhio0fa.iot.us-east-1.amazonaws.com} is sent. 
+As mentioned for WLAN capturing, an attacker can extract private information as soon as the capturing is started. This because the filter and identification of traffic is based in MAC addresses. For LAN an attacker will have to eavesdropp WAN traffic for maximum of 24 hours before the DNS request to \textit{a2uowfjvhio0fa.iot.us-east-1.amazonaws.com} is sent, and the corresponding Irobot cloud service is identified. 
 
 \section{Research Question  2}
-\textbf{How can the information exposed by the sniffing attack be misused by an attacker?} 
+\textbf{How can information exposed by the eavesdropping be misused by an attacker?} 
 
 Private information exposed to an attack can be utilized to identify user behavior and routines. This could potentially revile habits of when the user is leaving the environment, and identify user presence with high confidence. This information can be used to target user environment during empty hours, or address the environment when the user is present. Such information can also be sold to other actors. 
 
-The identification of devices can be used execute targeted attacks. Spear phishing \cite{spear_phishing} will be more effective. They can also target attack you aims to exploit known or unknown vulnerabilities for the identified devices.  
+The identification of devices can be used  to target attacks, based on IoT inventory. Spear phishing \cite{spear_phishing} will be more effective. They can also target attack to exploit known or unknown vulnerabilities for the identified devices. This will increase the success rate of an attack. Exposed privacy information will threaten the security of any smart environment. 
 
 \section{Research Question  3}
 \textbf{Which security measures can be implemented to limit the exposed data and decrease the risk of misuse?} 
 
-The most efficient way to defend against the detection algorithm would be to implement a traffic sharper connected to the access point. This device could disrupt the predicted network traffic flows, pad existing packets or inject packets to break the patters. This will be an effective way to defend against this in LAN or WLAN eavesdropping. The same could be implemented on the Irobot itself, then the defence would include the wi-fi traffic as well. 
+The most efficient way to defend against the detection algorithm, would be to implement a traffic sharper. This device could disrupt the predicted network traffic flows, pad existing packets or inject packets to break the patters. This will be an effective way to defend against this in LAN or WLAN eavesdropping. A disadvantage with traffic shaping, will be higher latency, more data processing on local equipment. Implementation of traffic shaper could be on the robot vacuum cleaner itself, this would secure the communication regardless of the smart home environment infrastructure. Or as a service within the smart environment, then the overall security of the smart environment would increase. 
 
 Irobot could implement random MAc addressing \cite{random_mac_bernardos2020rfc} for WLAN communication. This would allow the Irobot vacuum cleaner to use a random MAC address each time is connects to a new network, or change randomly to mislead an attacker. 
 
-As for WAN or LAN tarffic, DNS is a easy identifier. The initial session needs to be established based on a DNS request, but consecutive changes could be transferred through the encrypted communication channel established. This could mitigate the use of DNS as detection. 
+As for WAN or LAN tarffic, DNS is an easy identifier. The initial session needs to be established based on a DNS request, but consecutive changes could be transferred through the encrypted communication channel established. This could mitigate the use of DNS as detection. 
 
 
 

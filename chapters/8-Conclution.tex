@@ -1,14 +1,19 @@
 \chapter{Conclusions}
-In this thesis, we have proposed signatures and detection algorithms to perform event detection and attribution, of a Irobot Roomba i7 robot vacuum cleaner. The research was done in two different smart home environments, where the same robot vacuum cleaner was deployed. A baseline traffic capture was conducted over time period of 14 days, this capture was used to identify all event irrelevant traffic. 
+In this thesis, we have proposed event detection algorithms to perform event detection and attribution, of an Irobot Roomba i7 robot vacuum cleaner. Data collection was done in two different smart home environments, where the same robot vacuum cleaner was deployed. A baseline traffic capture was conducted over a time period of 14 days, this capture was used to identify all event irrelevant traffic. Based on these finding all IP-packets less then 98 bytes was excluded for further analysis.  
 
-Analysis of the baseline capture we were able to separate traffic generated from the Ibotbot Roomba i7 and other devices. This allowed us to create a baseline filter to exclude all irrelevant event traffic, the result was a reduction of more then 99\% of the captured traffic. The same base-filter was applied to the event capturing files, leaving only the traffic relevant to the actual event triggered. IP-addresees, DNS responses and tcp packet length sequences was analyzed. The findings resulted in event specific signatures and a detection algorithm. 
+The result was a reduction of more then 99\% of the captured traffic. The same base-filter was applied to the event capturing files, leaving only the traffic relevant to the actual events. IP-addresees, DNS responses and TCP packet length sequences was analyzed. The findings resulted in event specific signatures and a detection algorithm. Five different signatures was proposed. 
 
-To evaluate the proposed signatures and detection algorithms we deployed the Irobot Roomba i7 in three new smart home environments. Each of the environments had several other IoT devices connected to create a more representable smart home. The detection algorithms detected 3 out of 6 with 100\% accuracy. For the remaining three the algorithm detects that there has been triggered a cleaning event, but cannot distinguish between scheduled cleaning or physical triggered cleaning. For Remove bin event, it was not able to detect any of the events during evaluation. This thesis' results shows that there is possible to expose user private information only based on passive eavesdropping of smart environment network traffic. 
+To evaluate the proposed event detection algorithm, we deployed the Irobot Roomba i7 in three new smart home environments. Each of the environments had other IoT devices connected to create a more representable smart home. The detection algorithms detected 4 out of 5 with 100\% accuracy. The last event \textit{Bin Remove} gave False negative in all three evaluation environments.
 
+This thesis' results can with high confidence identify and attribute different events triggered on an Irobot Roomba i7, based on WAN network traffic. This will expose user routines and habits. It is also identified the same type of packet sequence in WLAN, which makes the detection transferable to wi-fi as well. Security measures should therefore be used by the Robot vaccum cleaner vendors ti mitigate the risk of these eavesdropping attacks. 
 
 \section{Future work}
-In the future it would be interesting to look into development of a tool that can automate this thesis process. Automated event triggering and capturing will increase the potential data foundation for further research. The process will be similar for different robot vacuum cleaner, which can adopt and investigate differences across the industry.
-This should be followed be the integration of ML algorithms to train the signatures for each event. ML can analyse and create signature based on a much greater data set then any human mind. The combination can result in an automated event learning and detection of robot vacuum cleaners. 
+Future research should look into development of an automated tool, which can capture, process and analysis network traffic automatically. This would ease the process, and enable researches to extract similar results from a series of robot vacuum cleaners. Future it could compare different vendors and, evaluate privacy differences cross vendors. This would contribute to better security awareness and design for all users of robot vacuum cleaners. 
+
+Another diction of research would be to look into irobot integration. Create real life smart environments, where devices that can integrate and trigger vacuum cleaner events is deployed. Device attribution and traffic correlation, could expose even more private information about users.   
+
+
+
 
 
 
