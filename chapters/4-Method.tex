@@ -1,7 +1,8 @@
 \chapter{Method}
 \label{cap:Method}
+This chapter covers the method used to conduct this research. Including choices made in the smart home architecture, capturing, processing and analysis processes. Further the logical structure of the detection algorithm is presented. 
 
-In this chapter, the method used to conduct this Master thesis will be described. The entire method is broken down into several sub processes to better structure and describe, as illustrated in  \ref{fig:Method_process}.  
+In this chapter, the method used to conduct this Master project will be described. The entire method is broken down into several stages to better structure and describe, as illustrated in  \ref{fig:Method_process}.  
 
 \begin{figure}[H]
     \centering
@@ -12,7 +13,7 @@ In this chapter, the method used to conduct this Master thesis will be described
 
 
 
-\section{Device and Environment Selection}
+\section{Smart Environment Infrastructure Selection}
 Due to limited financial resources it was only possible to acquire one robot vacuum cleaner. A robot vacuum cleaner survey was conducted at the start of the research, and the selection sat the requirements for the rest of the environment.  
 
 \subsection{Selection of Robot Vacuum Cleaner Model}
@@ -33,10 +34,11 @@ Data and ratings from these three robot vacuum cleaner review sites \cite{robots
 Results from the review sites is presented in Table \ref{tab:Robotreviewsites}, and shows that the two best robot vacuum cleaner vendors are, Irobot and Roborock.
 \begin{table}[H]
     \centering
+    \caption{Robot vacuum selection review-site}
     \begin{subtable}[b]{0.45\linewidth}
         \centering
         \caption{Results from review-site \cite{robotsel11}}
-        \begin{tabular}{|l|l|}
+        \begin{tabular}{|c|c|}
             \hline 
             \textbf{Vendor} & \textbf{Number on top ten} \\ \hline
             Irobot      & 3                 \\                   \hline
@@ -50,7 +52,7 @@ Results from the review sites is presented in Table \ref{tab:Robotreviewsites}, 
     \begin{subtable}[b]{0.45\linewidth}
         \centering
         \caption{Results from review-site \cite{robotsel12}}
-        \begin{tabular}{|l|l|}
+        \begin{tabular}{|c|c|}
             \hline
             \textbf{Vendor}    & \textbf{Number on top ten} \\ \hline
             Irobot      & 2                 \\                   \hline
@@ -63,7 +65,7 @@ Results from the review sites is presented in Table \ref{tab:Robotreviewsites}, 
     \begin{subtable}[b]{0.45\linewidth}
         \centering
         \caption{Results from review-site \cite{robotsel13}}
-        \begin{tabular}{|l|l|}
+        \begin{tabular}{|c|c|}
             \hline
             \textbf{Vendor}    & \textbf{Number on top ten} \\ \hline
             Irobot      & 2                 \\                   \hline
@@ -77,7 +79,7 @@ Results from the review sites is presented in Table \ref{tab:Robotreviewsites}, 
     \begin{subtable}[b]{0.45\linewidth}
         \centering
         \caption{Summary of all review-sites}
-        \begin{tabular}{|l|l|}
+        \begin{tabular}{|c|c|}
             \hline
             \textbf{Vendor}    & \textbf{Number on top ten} \\ \hline
             Irobot      & 7                 \\                   \hline
@@ -87,7 +89,6 @@ Results from the review sites is presented in Table \ref{tab:Robotreviewsites}, 
             iLife       & 3                 \\                   \hline
         \end{tabular}
     \end{subtable}
-    \caption{Robot vacuum selection review-site}
     \label{tab:Robotreviewsites}
 \end{table}
 

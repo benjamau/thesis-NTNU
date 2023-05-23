@@ -1,6 +1,7 @@
 \chapter{Evaluation}
 \label{cap:Evaluation}
-This chapter will describe the evaluation, the goal is to test signatures and rules detection algorithm. First the evaluation method is presented and then the results. The last section  of this chapter is answering the research questions. 
+This chapter will evaluate the performance of each event identification algorithm that we presented in the last chapter.
+
 
 \section{Evaluation Method}
 This section describes the method used to evaluate the thesis results. The evaluation process reuse network infrastructure, capturing process and data filtering as in the original research. Some new aspects are included in the evaluation to make the environments more representative for smart environments. These new aspects are describes in detail further in this section.
@@ -211,7 +212,7 @@ The rules and detection algorithm was able to detect all events with 100\% accur
 Bin remove detection gave False negative for all the bin remove events. This might be because the ejection of the bin was executed without causing the Irobot Roomba to lose connection to the charging connectors. The detection algorithm also had False positive identification of bin remove event for 66\% of the automated cleaning event. The bin remove signature is therefore not usable in detection of bin removal. 
 
 
-\section{Research Question 1}
+\section{Our Answer to Research Question 1}
 \textbf{Which private information can be gathered from robot vacuum cleaner by carrying out a passive sniffing attack in a smart environment?}
 
 It is possible to identify the presence of an Irobot vacuum cleaner inside a smart environment based on the WLAN or LAN capture itself. In WLAN eavesdropping an attacker can lookup all  MAC addresses against open source registers. For LAN capture the presence of DNS requests to any Irobot owned domain will place a device behind the WAN address.
@@ -224,14 +225,14 @@ For application triggered cleaning and application start it is harder to identif
 
 As mentioned for WLAN capturing, an attacker can extract private information as soon as the capturing is started. This because the filter and identification of traffic is based in MAC addresses. For LAN an attacker will have to eavesdropp WAN traffic for maximum of 24 hours before the DNS request to \textit{a2uowfjvhio0fa.iot.us-east-1.amazonaws.com} is sent, and the corresponding Irobot cloud service is identified. 
 
-\section{Research Question  2}
+\section{Our Answer to Research Question  2}
 \textbf{How can information exposed by the eavesdropping be misused by an attacker?} 
 
 Private information exposed to an attack can be utilized to identify user behavior and routines. This could potentially revile habits of when the user is leaving the environment, and identify user presence with high confidence. This information can be used to target user environment during empty hours, or address the environment when the user is present. Such information can also be sold to other actors. 
 
 The identification of devices can be used  to target attacks, based on IoT inventory. Spear phishing \cite{spear_phishing} will be more effective. They can also target attack to exploit known or unknown vulnerabilities for the identified devices. This will increase the success rate of an attack. Exposed privacy information will threaten the security of any smart environment. 
 
-\section{Research Question  3}
+\section{Our Answer to Research Question  3}
 \textbf{Which security measures can be implemented to limit the exposed data and decrease the risk of misuse?} 
 
 The most efficient way to defend against the detection algorithm, would be to implement a traffic sharper. This device could disrupt the predicted network traffic flows, pad existing packets or inject packets to break the patters. This will be an effective way to defend against this in LAN or WLAN eavesdropping. A disadvantage with traffic shaping, will be higher latency, more data processing on local equipment. Implementation of traffic shaper could be on the robot vacuum cleaner itself, this would secure the communication regardless of the smart home environment infrastructure. Or as a service within the smart environment, then the overall security of the smart environment would increase. 

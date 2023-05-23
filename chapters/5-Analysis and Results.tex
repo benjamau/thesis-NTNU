@@ -1,6 +1,6 @@
 \chapter{Analysis and Results}
 \label{cap:AnalysisandResults}
-In this chapter the analysis and the result of the research findings will be presented. The overall structure will follow the structure of chapter \ref{cap:Method}.
+In this chapter the analysis and the result of the research findings will be presented. 
 
 \section{Traffic Capturing}
 Standby traffic was captured between 8 and 22  of January. During this time period, no interaction with the vacuum cleaner was done. It was also continuously connected to WiFi, enabling Internet connectivity.
@@ -393,7 +393,7 @@ The identified signature for Automated cleaning includes the presents of two DNS
 
 
 \subsection{Data Analysis for Application Triggered Cleaning}
-The overall characteristics for this event is presented in table \ref{tab:TCoverallOSL} and \ref{tab:TCoverallDRA}. As presented the average and the standard deviation within the different environments is small. This supports the hypothesis that is is sufficient with 20 captured events to perform further analysis.
+The overall characteristics for this event is presented in Table \ref{tab:TCoverallOSL} and \ref{tab:TCoverallDRA}. As presented the average and the standard deviation within the different environments is small. This supports the hypothesis that is is sufficient with 20 captured events to perform further analysis.
 
 \begin{table}[H]
 \centering
@@ -581,7 +581,7 @@ The reason for adding + or - 15 and 5 is because the actual value is varies with
 \end{figure}
 
 \subsubsection{Signature}
-The identified signature for Physical triggered cleanig includes the present of two DNS responses and one of the given sequences.  
+The identified signature for Physical triggered cleaning includes the present of two DNS responses and one of the given sequences.  
 
 \begin{itemize}
     \item \textit{0550315.ingest.sentry.io}
@@ -591,7 +591,7 @@ The identified signature for Physical triggered cleanig includes the present of 
 \end{itemize}
 
 \subsection{Data Analysis for Application Start}
-The captures including Application start event has a small amount of network traffic. The deviation is therefore large, but the difference in in how long the application was open and actions and changes made, could cause this variation. In Drammen, event 5 to 10 was used to change the time for a scheduled cleaning event. This can be identified in table \ref{tab:TestMatrixEnv2}, as more traffic is generated. The same procedure should have been followed to create more stable results. This research will therefor only focus on the initial traffic flow.
+The captures including Application start event has a small amount of network traffic. The deviation is therefore large, but the difference in in how long the application was open and actions, could cause this variation. In Drammen, event 5 to 10 was used to change the time for a scheduled cleaning event. This can be identified in table \ref{tab:TestMatrixEnv2}, as more traffic is generated. The same procedure should have been followed to create more stable results. This research will therefor only focus on the initial traffic flow.
 
 \begin{table}[H]
 \centering
@@ -640,10 +640,10 @@ Standard deviation        & 9.22
 \end{table}
 
 \subsubsection{Protocol Identification}
-During an application start there is only tcp packages sent between the vacuum cleaner and the cloud service. This is traffic towards the Irobot cloud server which holds the tcp keep-alive connection. 
+During an application start there is only tcp packages sent between the vacuum cleaner and the cloud service.
 
 \subsubsection{Traffic Sequence}
-All events has a common sequence initiated from the cloud service, \textit{[209, 289, 316]} where the two last packets can be in mixed order. The vacuum cleaner then responds with two packets with length \textit{176, 187}, before the could service responds with a package with length \textit{409 or 408}. The entire packet sequence is then \textit{[316, 289, 176, 187, 409] or [289, 316, 176, 187, 409]}. This is identified in figure \ref{fig:ASseq}.
+All events has a common sequence initiated from the cloud service, \textit{[209, 289, 316]} where the two last packets can be in mixed order. The vacuum cleaner then responds with two packets with lengths of \textit{176, 187}, before the could service responds with a package with a length of \textit{409 or 408}. The entire packet sequence is then \textit{[316, 289, 176, 187, 409] or [289, 316, 176, 187, 409]}. This is identified in figure \ref{fig:ASseq}.
 
 \begin{figure}[H]
     \centering
@@ -661,7 +661,7 @@ The identified signature for Application start includes one of the given sequenc
 
 
 \subsection{Data Analysis for Bin Remove}
-For the Bin remove event there is some deviations in traffic amount. Observations during the event triggering was, that sometimes the vacuum cleaner made a sound, sometimes it started flashing. This is probably because it lost connection with one of the charging contacts. This causes the event to be non standard and loose validity. The event will throughout this research be Bin remove, but it can be discussed if the event should be renamed Robot physical touch. 
+For the Bin remove event there is some deviations in traffic amount. Observations during the event triggering was, that sometimes the vacuum cleaner made a sound, sometimes it started flashing. This is probably because it lost connection with one of the charging connectors. This causes the event to be non standard and loose validity. The event will throughout this research be Bin remove, but it can be discussed if the event should be excluded.
 
 \begin{table}[H]
 \centering
@@ -724,15 +724,14 @@ The traffic sequence has to distinct packet lengths which is not identified in a
 \end{figure}
 
 \subsubsection{Signature}
-The siganture for Bin removal event is therefor the identification of this sequence
+The signature for Bin removal event is therefor the identification of this sequence
 \begin{itemize}
-    \item \textit{[179, 187, 410]}
+    \item \textit{[179, 187, 410]} + - 1
 \end{itemize}
 
 
 \subsection{WLAN and LAN Analysis}
-Both WLAN and LAN traffic was captured for all events triggered in this research. Due to time limitations this research only created detection mechanisms for the LAN traffic. More information could be extracted using LAN traffic, since all WLAN traffic was encrypted at the wi-fi header. This exclude information such as DNS. 
-To determine if the same method can be applied to the WLAN traffic, the two captures are compared. In this analysis it is identified that there is a lower number of packets in the WLAN, this could be due to different segmentation or re-transmission. It could also be due to other broadcast and multi cast processes on wifi or dual channel communication.   Regardless of this it is possible to identify that the added WLAN header is 79 bytes. This is shown in \ref{fig:WLANLANHeader}
+WLAN and LAN traffic were captured for all triggered events, but due to the thesis' time constrains we only identified signatures and detection algorithms on LAN captures. The simulated WAN traffic had more available attributes, due to the WiFI's encryption. \cite{pingpong_trimananda2020packet} have already proposed a method to identify actions based on packet lengths. We therefore focused on the WAN traffic, to be able to include DNS as a identifier. To evaluate if the same method and algorithm is applicable  to WLAN traffic we did a comparison of two corresponding captures. Through analysis we identified that the added WiFI header was 79 bytes, the base filter of 97 bytes in LAN captures was therefore converted to 176 bytes in WLAN. When this filter was applied we could identify the same packet sequences as in the simulated WAN traffic. These findings are presented in Figure \ref{fig:WLANLANHeader}. With the base filter applied we also observed that the WLAN capture included less packets then the corresponding LAN capture. This could be the result of retransmission, dual WiFi channels, signal disruption and packet collision on the NIC in monitoring mode. When the NIC was configured in monitoring mode, it collected all WiFi traffic in the area. This includes traffic from other SSIDs within wireless coverage. The original ISP modem, was also brocasting it's SSIDs, causing high Signal to Noise Ratio (SNR) for more then one SSID. Without control traffic between the AP and the NIC it could potentially lose traffic. Regardless of the packet loss we are still able to identify similar patterns in WLAN traffic. 
 
 \begin{figure}[H]
     \centering
@@ -750,23 +749,18 @@ To determine if the same method can be applied to the WLAN traffic, the two capt
     \label{fig:WLANLANHeader}
 \end{figure}
 
-
-Due to this we can assume that some of the same sequences can be found in WLAN capturing as they do in LAN capturing, but more work has to be done to identify and evaluate the differences in traffic flow. An advantage with WLAN capture is that captured traffic has a Irobot MAC address, so it is easier to identify the interesting traffic without any DNS and IP changes. 
-
-
-
+WLAN captures need more analysis before they can be implemented in the detection algorithm. An advantage of WLAN traffic is the availability of MAC addresses, an attacker can therefore easily identify the robot vacuum cleaner and filter traffic based on this information. Compared to LAN where an attackers will not have to eavesdrop for up to 24 hours, before the Irobot traffic can be identified. 
+ 
 
 \subsection{Signature Comparison}
-In this subsection we will compare the different signatures identified in the different event. 
-
-All the different cleaning events had the same DNS responses present in the packet capturing. First a DNS response for \textit{0550315.ingest.sentry.io} and then \textit{0550315.ingest.sentry.io}. These dns packets can therefore not be used as signature for any of the specific cleaning events, but included as a confident test to identify that a cleaning is executed. There is several similarities between the identified sequences and this will be discussed further.
+All the different cleaning events had the same DNS responses present in the packet capturing. First a DNS response for \textit{0550315.ingest.sentry.io}, followed by \textit{0550315.ingest.sentry.io}. These dns packets can therefore not be used as signature for any of the specific cleaning events, but as a confident test to identify that a cleaning is executed. There is several similarities between the identified sequences and this will be discussed further.
 
 \paragraph{Comparison between Scheduled cleaning and Physical triggered cleaning event.} Both events had the identified packet length sequences listed below. 
 \begin{itemize}
     \item \textit{[176, 173, 179, 443, 177]} +- 15
     \item \textit{[176, 443, 179, 443, 177]} +- 5
 \end{itemize}
-These sequences can therefore not differentiate the events. However the traffic sequence on all the scheduled cleaning events is started within a minute before the scheduled cleaning time. It is safe to assume that scheduled cleaning is configured every hole hour or half hour. A normal user would probably not configure a cleaning at 15:17, but at 15:00. Time stamps for first packets is shown in \ref{tab:timestampSCPC}. If an attacker is monitoring a smart home over a longer period of time, the scheduled cleaning event can also be attributed if the cleaning event is triggered on the same time, each day or each week. For example, if the attacker can observe a cleaning event every Friday at 07:59, it is safe to assume that this is a scheduled cleaning and not a physical triggered cleaning.
+These sequences can therefore not differentiate the events. However the traffic sequence on all the scheduled cleaning events is started within a minute before the scheduled cleaning's configured trigger time. It is safe to assume that scheduled cleaning is configured every hole hour or half hour. A normal user would probably not configure a cleaning at 15:17, but at 15:00. Time stamps for first packets is shown in \ref{tab:timestampSCPC}. If an attacker is monitoring a smart environment during a longer time period, the two different cleanings can be separated based on reoccurring identification. A identified cleaning every Monday at 07:59 is most likely a scheduled cleaning, since humans are not provide the same level of consistency.
 
 
 
@@ -780,7 +774,6 @@ These sequences can therefore not differentiate the events. However the traffic 
 \end{tabular}
 \end{table}
 
-The timestamps of the physical triggered cleaning is not presentable for a real smart home environment. These events are triggered at scheduled times and not random as we can assume it will in a live smart home environment. 
 
 \paragraph{Application start and Application Triggered Cleaning}
 both event had the same identified sequence
@@ -793,72 +786,97 @@ We can assume that this sequence is due to the fact that the application is star
 \paragraph{Automated cleaning compared to Application triggered cleaning}
 The only difference between these two events is the first package in Application start sequence. This packet has the length of 209 bytes and occurs 100 \% of the times the application is started. The identification of this is therefor a good attribute to differentiate for these events.
 
-\section{Detection Rules}
-In this section all the different detection signatures will be presented. Based on the comparison, it has been some change from the once identified. Each detection will be presented with sudo code, where the actual code is presented in Appendix. 
+\section{Event Identification}
+This section, presents logical sudo code  for all identification algorithms created through the analysis. Each algorithm aims to identify the presents of one signature. The raw python could is presented in Appendix \ref{app:DetectionAlgorithm}. 
 
 \paragraph{Application start detection} will be used for both Application start and Application triggered cleaning detection. Sudo code is presented below.
 
-\begin{lstlisting}
-# Python code, Application start detection
-1. function detect_application_start(packet_lengths)
-2.      signature1 = [209,289,316]
-3.      signature2 = [209.316.289]
-4.      if signature1 in packet_lengths
-5.           application_start_confidence = + 10
-6.      elsif signature1 in packet_lengths
-7.          application_start_confidence = + 10
-8.      return application_start_confidence
-\end{lstlisting}
+\begin{figure}[H]
+    \centering
+    \caption{The algorithm for identifying the application-start event}
+    \label{fig:Sudo_code_application start}
+    \begin{lstlisting}[numbers=left]
+     function detect_application_start(packet_lengths)
+          signature1 = [209,289,316]
+          signature2 = [209.316.289]
+          if signature1 in packet_lengths
+               application_start_confidence = + 10
+          elsif signature1 in packet_lengths
+              application_start_confidence = + 10
+          return application_start_confidence
+    \end{lstlisting}
+\end{figure}
 
 \paragraph{Cleaning detection} is done as a attribute to be used to add confidence to a cleaning event. 
-\begin{lstlisting}
-# Python code, Celaning event detection
-1. function cleaning_event_detection(event_capture)
-2.      if 'o550315.ingest.sentry.io' in event_capture
-3.           dns1 == True
-4.      elsif
-5.           dns1 == False
-6.      if 's3.amazonaws.com' in event_capture
-7.           dns2 == True
-8.      elsif
-9.           dns2 == False
-10.     if dns1 and dns2 == True      
-11.          cleaning_confidece = + 10
-12.     return cleaning_confident
-\end{lstlisting}
+\begin{figure}[H]
+    \centering
+    \caption{The algorithm for identifying general cleaning event}
+    \label{fig:Sudo_code_cleaning_event}
+    \begin{lstlisting}[numbers=left]
+     function cleaning_event_detection(event_capture)
+          if 'o550315.ingest.sentry.io' in event_capture
+               dns1 == True
+          elsif
+               dns1 == False
+          if 's3.amazonaws.com' in event_capture
+               dns2 == True
+          elsif
+               dns2 == False
+          if dns1 and dns2 == True      
+               cleaning_confidece = + 10
+          return cleaning_confident
+    \end{lstlisting}
+\end{figure}
 
 \paragraph{Application triggered cleaning} is detected with a combination of Application start and cleaning detection.
-\begin{lstlisting}
-# Python code, Application start detection
-1. function application_triggered_cleaning(cleaning_confident, application_start_confident)
-2.      if cleaning_confident and application_start_confident > 0
-3.          application_triggered_cleaning_confident = + 10
-4.      return application_triggered_cleaning_confident
-\end{lstlisting}
+
+
+\begin{figure}[H]
+    \centering
+    \caption{The algorithm for identifying the physical-triggered-cleaning-event}
+    \label{fig:Sudo_code_application_triggered_cleaning_detection}
+    \begin{lstlisting}[numbers=left]
+     function application_triggered_cleaning(cleaning_confident, application_start_confident)
+          if cleaning_confident and application_start_confident > 0
+              application_triggered_cleaning_confident = + 10
+          return application_triggered_cleaning_confident
+    \end{lstlisting}
+\end{figure}
 
 \paragraph{Scheduled cleaning and Physical triggered cleaning}, time detection has not been implemented due to time limitations, but the sudo code for the detection based on the sequence is presented in the analysis. 
-\begin{lstlisting}
-# Python code, Application start detection
-1. function detect_application_start(packet_lengths_src)
-2.      signature1 = [176,173,179,443,177]
-3.      signature2 = = [176,443,179,443,177]
-4.      if signature1 in packet_lengths
-5.           SC_PTC_confident = + 10
-6.      elsif signature1 in packet_lengths
-7.           SC_PTC_confident = + 10
-8.      return SC_PTC_confident
-\end{lstlisting}
+
+
+\begin{figure}[H]
+    \centering
+    \caption{Sudo code for scheduled or physical triggered cleaning detection}
+    \label{fig:Sudo_code_SC_or_PC}
+    \begin{lstlisting}[numbers=left]
+     function detect_application_start(packet_lengths_src)
+          signature1 = [176,173,179,443,177]
+          signature2 = = [176,443,179,443,177]
+          if signature1 in packet_lengths
+               SC_PTC_confident = + 10
+          elsif signature1 in packet_lengths
+               SC_PTC_confident = + 10
+          return SC_PTC_confident
+    \end{lstlisting}
+\end{figure}
 
 \paragraph{Automated cleaning}, is identified as with the sequence identified in the analysis. 
-\begin{lstlisting}
-# Python code, Application start detection
-1. function detect_application_start(packet_lengths_src)
-2.      signature1 = [316, 289, 176, 187, 409]
-3.      signature2 = [289, 316, 176, 187, 409]
-4.      if signature1 in packet_lengths
-5.           automanted_cleaning_confident = + 10
-6.      elsif signature1 in packet_lengths
-7.           automated_cleaning_confident = + 10
-8.      return automated_cleaning_confident
-\end{lstlisting}
+
+
+\begin{figure}[H]
+    \centering
+    \caption{The algorithm for identifying the automated-cleaning event}
+    \label{fig:Sudo_code_AC}
+    \begin{lstlisting}[numbers=left]
+     function detect_application_start(packet_lengths_src)
+          signature1 = [316, 289, 176, 187, 409]
+          signature2 = [289, 316, 176, 187, 409]
+          if signature1 in packet_lengths
+               automanted_cleaning_confident = + 10
+          elsif signature1 in packet_lengths
+               automated_cleaning_confident = + 10
+    \end{lstlisting}
+\end{figure}
 
