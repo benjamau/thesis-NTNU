@@ -1,0 +1,61 @@
+\chapter{DNS Extraction Algorithm}
+\label{app:DNSex}
+
+
+\begin{lstlisting}[numbers=left]
+import pyshark
+import os
+
+
+def dns_ip_find ():
+    
+    
+    #Loop all packets in capture
+    for packet in cap:
+
+        #find DNS response lager then 100 bytes 
+        if packet.highest_layer == 'DNS' and packet.ip.dst_host == '192.168.0.56':
+            #print('dns')
+            #find cleaning dns response
+            if packet.dns.resp_name == 'a2uowfjvhio0fa.iot.us-east-1.amazonaws.com':
+                print(packet.dns.pretty_print())
+                print(packet.sniff_time)
+                print(packet.number)
+                print('dns1')
+
+            if packet.dns.resp_name == 'unauth1.prod.iot.irobotapi.com':
+                print(packet.dns.pretty_print())
+                print(packet.sniff_time)
+                print('dns1')
+
+            if packet.dns.resp_name == 'disc-prod.iot.irobotapi.com':
+                print(packet.dns.pretty_print())
+                print(packet.sniff_time)
+                print('dns1')
+
+
+            if packet.dns.resp_name == '0.irobot.pool.ntp.org':
+                print(packet.dns.pretty_print())
+                print(packet.sniff_time)
+                print('dns1')
+            if packet.dns.resp_name == 'o550315.ingest.sentry.io':
+                print(packet.number)
+            
+    
+ 
+
+    return None
+
+
+folder = [r'C:\Users\benja\Documents\Mater test results\LAN\Live\Env1_dns']
+files = os.listdir(folder[0])
+
+for file in files:
+
+    print(file)
+    file_path = str(folder[0] + '\\' + file)
+    cap = pyshark.FileCapture(file_path, display_filter='dns')
+    cap.load_packets()
+
+    dns_ip_find()
+\end{lstlisting}

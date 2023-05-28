@@ -1,0 +1,55 @@
+\chapter{Packet Lengths Extraction Algorithm}
+\label{app:Packetlengthex}
+
+
+\begin{lstlisting}[numbers=left]
+     import pyshark
+from pyshark.packet import consts
+from pyshark.packet.common import Pickleable
+import matplotlib
+import numpy
+import os
+
+folder = [r'filepath']
+files = os.listdir(folder[0])
+#print(folder[0] + '\\' + files[0])
+sum_lenght=  []
+sum_nr = []
+print(files)
+for file in files:
+
+    file_path = str(folder[0] + '\\' + file)
+    #print(file)
+    cap = pyshark.FileCapture(file_path)
+    cap.load_packets()
+    packet_lengths = []
+    packet_count = 0
+    
+    
+
+    for packet in cap:
+        
+       # if packet.ip.dst_host == '192.168.0.56':
+       #     packet_lengths.append('D ' + packet.length)
+       # else:
+       #     packet_lengths.append('S ' + packet.length)
+        packet_lengths.append(int(packet.length))
+        packet_count = packet_count + 1
+
+
+    print(file)
+    print(packet_count)
+    print(sum(packet_lengths))
+    sum_lenght.append(sum(packet_lengths))
+    sum_nr.append(packet_count)
+    #if len(packet_lengths) >= 20:
+    #    print(packet_lengths[0:20])
+    #else:
+    #    print(packet_lengths[0:len(packet_lengths)])
+
+
+print(sum(sum_lenght)/10)   
+print(sum(sum_nr)/10)
+print(sum_lenght)   
+print(sum_nr)    
+    \end{lstlisting}
