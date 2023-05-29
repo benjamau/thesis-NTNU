@@ -13,21 +13,21 @@ Event triggering was conducted in three different environments, now called \text
     \begin{subfigure}{0.35\textwidth}
         \centering
         \includegraphics[width=\linewidth]{figures/Liveroom1.png}
-        \caption{Guestroom environment}
+        \caption{Guestroom}
         \label{fig:Liveroom1}
     \end{subfigure}
     \hfill
     \begin{subfigure}{0.35\textwidth}
         \centering
         \includegraphics[width=\linewidth]{figures/Liveroom2.png}
-        \caption{Bedroom environment}
+        \caption{Bedroom}
         \label{fig:Liveroom2}
     \end{subfigure}
     \hfill
     \begin{subfigure}{0.45\textwidth}
         \centering
         \includegraphics[width=\linewidth]{figures/Liveroom3.png}
-        \caption{Living room environment}
+        \caption{Living room}
         \label{fig:Liveroom3}
     \end{subfigure}
     
@@ -35,7 +35,7 @@ Event triggering was conducted in three different environments, now called \text
     \label{fig:Liveroom}
 \end{figure}
 
-For each of the evaluation environments there were connected an additional IoT device to the same SSID as the Irobot Roomba. These devices generated traffic simulating a real life smart home environment. The additional IoT devices and associated evaluation environments are listed below.
+For each of the evaluation environments there were connected an additional \gls{IoT} device to the same \gls{SSID} as the Irobot Roomba. These devices generated traffic simulating a real-life smart environment. The additional \gls{IoT} devices and associated evaluation environments are listed below.
 
 \begin{itemize}
     \item \textbf{Guestroom}: IPAD connected
@@ -58,7 +58,7 @@ To ensure that the order of events is not affecting the results it was decided b
 
 \begin{figure}[H]
     \centering
-    \caption{Pseudo code for event order randomize}
+    \caption{Pseudo code for event order randomize function}
     \label{fig:Sudo_code_for_event_order_randomize}
     \begin{lstlisting}[numbers=left]
          event_list = [scheduled_cleaning, Automated_cleaning, Application_triggered_cleaning, Application_start, Physical_triggered_cleaning, Bin_remove]
@@ -68,11 +68,11 @@ To ensure that the order of events is not affecting the results it was decided b
     \end{lstlisting}
 \end{figure}
 
-The basefilter created during baseline analysis in Chapter \ref{cap:AnalysisandResults} is applied to all the capturing files. This excluded traffic not relevant to the actual event triggered. One additional processing step was included to be able to identify only the relevant corresponding Irobot cloud server. During the restart of the Irobot Roomba it had to request a DNS record for \textit{a2uowfjvhio0fa.iot.us-east-1.amazonaws.com} before establishing a TCP connection, this DNS response was extracted with a python script presented in Appendix \ref{app:DNSex}, an pseudo code is presented in Figure \ref{fig:Sudo_code_for_IP_extraction_from_DNS_response}. This was further identified in Wireshark where the TCP hand-shake towards one of the responded IP addresses was found. The IP observed in the TCP handshake was added Wireshark filter. All traffic towards \textit{50315.ingest.sentry.io} and \textit{s3.amazoneaws.com} was therefore also excluded, but since only the DNS responses are used, all DNS traffic is also included in the Wireshark filter and is possible to identify.  
+The basefilter created during baseline analysis in Chapter \ref{cap:AnalysisandResults} is applied to all the capturing files. This excluded traffic not relevant to the actual event triggered. One additional processing step was included to be able to identify only the relevant corresponding Irobot cloud server. During the restart of the Irobot Roomba it had to request a \gls{DNS} record for \textit{a2uowfjvhio0fa.iot.us-east-1.amazonaws.com} before establishing a \gls{TCP} connection, this \gls{DNS} response was extracted with a python script presented in Appendix \ref{app:DNSex}, an pseudo code is presented in Figure \ref{fig:Sudo_code_for_IP_extraction_from_DNS_response}. This was further identified in Wireshark where the \gls{TCP} hand-shake towards one of the responded \gls{IP} addresses was found. The \gls{IP} observed in the \gls{TCP} handshake was added to the Wireshark filter. All traffic towards \textit{50315.ingest.sentry.io} and \textit{s3.amazoneaws.com} was therefore also excluded, but since only the \gls{DNS} responses are used, all \gls{DNS} traffic is also included in the Wireshark filter and is possible to identify.  
 
 \begin{figure}[H]
     \centering
-    \caption{Pseudo code for IP extraction from DNS response}
+    \caption{Pseudo code for \gls{IP} extraction from \gls{DNS} response}
     \label{fig:Sudo_code_for_IP_extraction_from_DNS_response}
     \begin{lstlisting}[numbers=left]
         Fuction find_dns_response(event_capture)
@@ -83,19 +83,19 @@ The basefilter created during baseline analysis in Chapter \ref{cap:AnalysisandR
  
 The new basefilter was applied together with a time filter extracting one capturing file for each 30 minutes, resulting in one event per file. Then event detection algorithm were used on all the event files to evaluate the level of detection in the general smart environment.  
 
-\subsection{Evaluation Results}
+\section{Evaluation Results}
 
-This subsection presents the data processing and rule detection results. First the event order generated by the randomized script is presented. This is followed by the DNS extraction and identification of the corresponding Irobot cloud server traffic. Evaluation results are presented and commented. 
+This subsection presents the data processing and rule detection results. First the event order generated by the randomized script is presented. This is followed by the \gls{DNS} extraction and identification of the corresponding Irobot cloud server traffic. Evaluation results are presented and commented. 
 Results from the randomize event order function, are presented in Table \ref{tab:evaleventoverview}. The randomization of the event triggering order mitigates the influence cross events. 
 
 \begin{table}[H]
 \small
 \centering
-\caption{Evaluation environments event triggering order}
+\caption{Evaluation environments' event triggering order}
 \label{tab:evaleventoverview}
 \begin{tabular}{|l|l|l|l|}
 \hline
-\textbf{Order} & \textbf{Evaluation 1}          & \textbf{Evaluation 2}          & \textbf{Evaluation 3}          \\ \hline
+\textbf{Order} & \textbf{Guestroom}          & \textbf{Bedroom}          & \textbf{Living room}          \\ \hline
 \textbf{1}        & Automated clean                & Application start              & Remove bin                     \\ \hline
 \textbf{2}        & App triggered clean            & Scheduled cleaning             & App triggered clean            \\ \hline
 \textbf{3}        & Scheduled cleaning             & App triggered clean            & Physical triggered            \\ \hline
@@ -105,25 +105,25 @@ Results from the randomize event order function, are presented in Table \ref{tab
 \end{tabular}
 \end{table}
 
-All capture files got processed by the DNS extraction algorithm identifying DNS responses for \textit{a2uowfjvhio0fa.iot.us-east-1.amazonaws.com} and extract information about the packet enabling identification in Wireshark. DNS responses for packet captures in the three environments are shown in Figure \ref{fig:Evaluation_DNSExtraction}, several IP addresses are responded and the Irobot Roomba choose one of these to and establish a TCP connection. 
+All capture files got processed by the \gls{DNS} extraction algorithm identifying \gls{DNS} responses for \textit{a2uowfjvhio0fa.iot.us-east-1.amazonaws.com} and extract information about the packet enabling identification in Wireshark. \gls{DNS} responses for packet captures in the three environments are shown in Figure \ref{fig:Evaluation_DNSExtraction}, several \gls{IP} addresses are responded and the Irobot Roomba choose one of these to and establish a \gls{TCP} connection to. 
 
 \begin{figure}[H]
     \centering
-    \begin{subfigure}{0.80\textwidth}
+    \begin{subfigure}{0.9\textwidth}
         \centering
         \includegraphics[width=\linewidth]{figures/Evaluation_dns_extraction 1.png}
         \caption{Guestroom DNS extraction}
         \label{fig:Evaluation_DNSextraction_1}
     \end{subfigure}
     \hfill
-    \begin{subfigure}{0.80\textwidth}
+    \begin{subfigure}{0.9\textwidth}
         \centering
         \includegraphics[width=\linewidth]{figures/Evaluation_dns_extraction 2.png}
         \caption{Bedroom DNS extraction}
         \label{fig:Evaluation_DNSextraction_2}
     \end{subfigure}
     \hfill
-    \begin{subfigure}{0.80\textwidth}
+    \begin{subfigure}{0.9\textwidth}
         \centering
         \includegraphics[width=\linewidth]{figures/Evaluation_dns_extraction 3.png}
         \caption{Living room DNS extraction}
@@ -133,7 +133,7 @@ All capture files got processed by the DNS extraction algorithm identifying DNS 
     \label{fig:Evaluation_DNSExtraction}
 \end{figure}
 
- A TCP handshake towards one of the IPs in the DNS response was identified right after the DNS response in Wireshark. The identification of these are presented in Figure \ref{fig:evaluation_corresponding_cloud}. This is a easy way for any attacker to identify corresponding traffic based on DNS requests. The used basefilters are listed below, and are identical for all environments except the IP address used to identify the Irobot cloud server. 
+ A \gls{TCP} handshake towards one of the \gls{IP}s in the \gls{DNS} response was identified right after the \gls{DNS} response in Wireshark. The identification of these are presented in Figure \ref{fig:evaluation_corresponding_cloud}. This is a easy way for any attacker to identify corresponding traffic based on \gls{DNS} requests. The used basefilters are listed below, and are identical for all environments except the \gls{IP} address used to identify the Irobot cloud server. 
 
 \begin{itemize}
         \item ((frame.time >= "Apr <day>, 2023 XX:00:00") \&\& (frame.time <= "Apr <day>, 2023 XX:30:00")) AND
@@ -152,29 +152,29 @@ All capture files got processed by the DNS extraction algorithm identifying DNS 
     \begin{subfigure}{0.80\textwidth}
         \centering
         \includegraphics[width=\linewidth]{figures/Evaluation_cloud_detection1.png}
-        \caption{Guestroom corresponding cloud detection}
+        \caption{Guestroom corresponding Irobot cloud detection}
         \label{fig:Evaluation_coulddetection_1}
     \end{subfigure}
     \hfill
     \begin{subfigure}{0.80\textwidth}
         \centering
         \includegraphics[width=\linewidth]{figures/Evaluation_cloud_detection2.png}
-        \caption{Bedroom corresponding cloud detection}
+        \caption{Bedroom corresponding Irobot cloud detection}
         \label{fig:Evaluation_clouddetection_2}
     \end{subfigure}
     \hfill
     \begin{subfigure}{0.80\textwidth}
         \centering
         \includegraphics[width=\linewidth]{figures/Evaluation_cloud_detection3.png}
-        \caption{Living room corresponding cloud detection}
+        \caption{Living room corresponding Irobot cloud detection}
         \label{fig:Evaluation_clouddetection_3}
     \end{subfigure}
     
-    \caption{Evaluation environments corresponding cloud detection}
+    \caption{Evaluation environments corresponding Irobot cloud detection}
     \label{fig:evaluation_corresponding_cloud}
 \end{figure}
 
-All 18 filtered event capturing files were processed by the detection algorithm in Appendix \ref{app:DetectionAlgorithm}. No manual analysis was done to the files before hand and detection results are presented in Table \ref{tab:Evaluation results}. \textit{Scheduled cleaning} and \textit{Physical triggered cleaning} are merged to \textit{Cleaning}, if a cleaning is identified, but no further signature identification is done. The event is either \textit{Scheduled cleaning} or \textit{Physical triggered cleaning}. 
+All 18 filtered event capturing files were processed by the detection algorithm in Appendix \ref{app:DetectionAlgorithm}. No manual analysis was done to the files before hand and detection results are presented in Table \ref{tab:Evaluation results}. \textit{Scheduled cleaning} and \textit{Physical triggered cleaning} are merged to \textit{Cleaning} but no further signature identification is done. The event is either \textit{Scheduled cleaning} or \textit{Physical triggered cleaning}. 
 
 \begin{table}[H]
 \small
@@ -190,7 +190,7 @@ All 18 filtered event capturing files were processed by the detection algorithm 
 \end{tabular}
 \end{table}
 
-The rules and detection algorithm were able to detect all events, except \textit{Bin remove}, with 100\% accuracy. Cleaning detection resulted in True positive for all cleaning events. \textit{Bin remove} detection gave False negative for all the bin remove events. This might be because the ejection of the bin was executed without causing the Irobot Roomba to lose connection to the charging connectors. The detection algorithm also had False positive identification of \textit{Bin remove} event for 66\% of the \textit{Automated cleaning} events. The bin remove signature is therefore not able to detect bin removal. 
+The rules and detection algorithm were able to detect all events, except \textit{Bin remove}, with 100\% accuracy. Cleaning detection resulted in True positive for all cleaning events. \textit{Bin remove} detection gave False negative for all the bin remove events. This might be because the ejection of the bin was executed without causing the Irobot Roomba to lose connection to the charging connectors. The detection algorithm also had False positive identification of \textit{Bin remove} event for 66\% of the events. The bin remove signature is therefore not able to detect bin removal. 
 
 
 
